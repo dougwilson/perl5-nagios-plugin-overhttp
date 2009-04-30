@@ -1,6 +1,6 @@
 package Nagios::Plugin::OverHTTP;
 
-use 5.008;
+use 5.008001;
 use strict;
 use utf8;
 use version 0.74;
@@ -92,6 +92,20 @@ This Nagios plugin provides a way to check services remotely over the HTTP
 protocol.
 
 =head1 DEPENDENCIES
+
+=over 4
+
+=item * L<Carp>
+
+=item * L<use Getopt::Long::Descriptive> 0.074
+
+=item * L<Moose> 0.74
+
+=item * L<MooseX::StrictConstructor> 0.08
+
+=item * L<Scalar::Util> 1.19
+
+=back
 
 =head1 AUTHOR
 
