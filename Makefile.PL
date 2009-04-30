@@ -6,6 +6,7 @@ author   'Douglas Christopher Wilson <doug@somethingdoug.com>';
 license  'perl';
 
 requires 'Getopt::Long::Descriptive' => 0;
+requires 'LWP::UserAgent'            => 0;
 requires 'Moose'                     => '0.74';
 requires 'MooseX::Getopt'            => '0.18';
 requires 'MooseX::StrictConstructor' => '0.08';

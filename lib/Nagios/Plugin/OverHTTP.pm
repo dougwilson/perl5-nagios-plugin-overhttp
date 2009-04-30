@@ -11,6 +11,7 @@ our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION = '0.01';
 
 use Carp ();
+use LWP::UserAgent ();
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
 
@@ -23,6 +24,14 @@ has 'url' => (
 	isa           => 'Str',
 	required      => 1,
 	documentation => q{The URL to the remote nagios plugin},
+);
+
+has 'useragent' => (
+	is            => 'rw',
+	isa           => 'LWP::UserAgent',
+	default       => sub { LWP::UserAgent->new; },
+	lazy          => 1,
+	traits        => ['NoGetopt'],
 );
 
 # Make immutable
