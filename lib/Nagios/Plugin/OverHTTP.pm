@@ -10,9 +10,20 @@ use warnings 'all';
 our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION = '0.01';
 
+use Carp ();
+use Getopt::Long::Descriptive 0.074 ();
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
 use Scalar::Util 1.19 ();
+
+# Attributes
+
+has 'url' => (
+	is            => 'rw',
+	isa           => 'Str',
+	required      => 1,
+	documentation => q{The URL to the remote nagios plugin},
+);
 
 sub BUILDARGS {
 	my (@args) = @_;
@@ -25,9 +36,34 @@ sub BUILDARGS {
 	# Parse the arguments
 	my ($class, $args) = @args;
 
+	if (keys %{$args} == 0) {
+		# Since there are no arguments, initiate from @ARGV
+		my @attributes = $class->meta->get_all_attributes;
+
+		# Reduce the list to not include private attributes
+		@attributes = grep {$_->name !~ m{\A _}msx} @attributes;
+
+		# Map the attributes into options
+		my @options = map {[
+			sprintf('%s=s', $_->name),
+			$_->documentation,
+		]} @attributes;
+
+		my ($options, $usage) = Getopt::Long::Descriptive::describe_options('Usage: %c %o', @options);
+
+		# Set the args to the parsed options
+		$args = $options;
+	}
+
 	# Return the argument hash and class
 	return $class, $args;
 }
+
+# Make immutable
+__PACKAGE__->meta->make_immutable;
+
+# Clean out Moose keywords
+no Moose;
 
 1;
 
