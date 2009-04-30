@@ -10,6 +10,25 @@ use warnings 'all';
 our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION = '0.01';
 
+use Moose 0.74;
+use MooseX::StrictConstructor 0.08;
+use Scalar::Util 1.19 ();
+
+sub BUILDARGS {
+	my (@args) = @_;
+
+	if (defined Scalar::Util::blessed($args[0])) {
+		# Call subclass BUILDARGS first
+		@args = $args[0]->SUPER::BUILDARGS(@args);
+	}
+
+	# Parse the arguments
+	my ($class, $args) = @args;
+
+	# Return the argument hash and class
+	return $class, $args;
+}
+
 1;
 
 __END__
