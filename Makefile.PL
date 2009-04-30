@@ -7,7 +7,8 @@ license  'gpl';
 
 build_requires 'Test::More';
 
-auto_install;
+# Enable tests to be in multi-level directories
+tests_recursive;
 
 WriteAll;
 
