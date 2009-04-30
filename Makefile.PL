@@ -12,6 +12,7 @@ requires 'MooseX::Getopt'            => '0.18';
 requires 'MooseX::StrictConstructor' => '0.08';
 requires 'Scalar::Util'              => '1.19';
 
+build_requires 'Test::MockObject';
 build_requires 'Test::More';
 
 # Enable tests to be in multi-level directories
