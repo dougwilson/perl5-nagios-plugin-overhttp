@@ -3,7 +3,7 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 
 use_ok('Nagios::Plugin::OverHTTP');
 
@@ -30,7 +30,11 @@ SKIP: {
 	# command line
 	my $plugin = Nagios::Plugin::OverHTTP->new_with_options;
 
-	skip 'Failure creating plugin.', 1 if !defined $plugin;
+	skip 'Failure creating plugin.', 2 if !defined $plugin;
 
-	is($plugin->url, $url, 'Minimal arguments.');
+	is($plugin->url, $url, 'Minimal arguments');
+
+	$plugin = Nagios::Plugin::OverHTTP->new_with_options(url => 'http://example.net/nagios/something');
+
+	is($plugin->url, $url, 'Command line arguments override perl arguments');
 }
