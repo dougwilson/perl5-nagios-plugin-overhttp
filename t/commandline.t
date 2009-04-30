@@ -3,7 +3,7 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 7;
+use Test::More tests => 8;
 
 use_ok('Nagios::Plugin::OverHTTP');
 
@@ -23,6 +23,7 @@ SKIP: {
 
 	like($err, qr/\s+--url\s+/msx, 'url should be in usage');
 
+	unlike($err, qr/\s+--message\s+/msx, 'message should not be in usage');
 	unlike($err, qr/\s+--useragent\s+/msx, 'useragent should not be in usage');
 }
 

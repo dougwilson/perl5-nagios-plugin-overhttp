@@ -19,6 +19,26 @@ with 'MooseX::Getopt';
 
 # Attributes
 
+has 'message' => (
+	is            => 'ro',
+	isa           => 'Str',
+	builder       => '_build_message',
+	clearer       => '_clear_message',
+	lazy          => 1,
+	predicate     => 'has_message',
+	traits        => ['NoGetopt'],
+);
+
+has 'status' => (
+	is            => 'ro',
+	isa           => 'Int',
+	builder       => '_build_status',
+	clearer       => '_clear_status',
+	lazy          => 1,
+	predicate     => 'has_status',
+	traits        => ['NoGetopt'],
+);
+
 has 'url' => (
 	is            => 'rw',
 	isa           => 'Str',
@@ -33,6 +53,31 @@ has 'useragent' => (
 	lazy          => 1,
 	traits        => ['NoGetopt'],
 );
+
+sub check {
+	my ($self) = @_;
+
+	$self->{message} = 'test';
+	$self->{status} = 'test';
+}
+
+sub _build_message {
+	my ($self) = @_;
+
+	# Preform the check
+	$self->check;
+
+	return $self->{message};
+}
+
+sub _build_status {
+	my ($self) = @_;
+
+	# Preform the check
+	$self->check;
+
+	return $self->{status};
+}
 
 # Make immutable
 __PACKAGE__->meta->make_immutable;
