@@ -5,8 +5,9 @@ all_from 'lib/Nagios/Plugin/OverHTTP.pm';
 author   'Douglas Christopher Wilson <doug@somethingdoug.com>';
 license  'perl';
 
-requires 'Getopt::Long::Descriptive' => '0.074';
+requires 'Getopt::Long::Descriptive' => 0;
 requires 'Moose'                     => '0.74';
+requires 'MooseX::Getopt'            => '0.18';
 requires 'MooseX::StrictConstructor' => '0.08';
 requires 'Scalar::Util'              => '1.19';
 

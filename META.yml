@@ -19,11 +19,12 @@ no_index:
     - inc
     - t
 requires:
-  Getopt::Long::Descriptive: 0.074
+  Getopt::Long::Descriptive: 0
   Moose: 0.74
+  MooseX::Getopt: 0.18
   MooseX::StrictConstructor: 0.08
   Scalar::Util: 1.19
-  perl: 5.8.0
+  perl: 5.8.1
 resources:
   license: http://dev.perl.org/licenses/
 version: 0.01

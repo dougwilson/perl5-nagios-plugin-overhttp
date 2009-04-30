@@ -11,10 +11,10 @@ our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION = '0.01';
 
 use Carp ();
-use Getopt::Long::Descriptive 0.074 ();
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
-use Scalar::Util 1.19 ();
+
+with 'MooseX::Getopt';
 
 # Attributes
 
@@ -24,40 +24,6 @@ has 'url' => (
 	required      => 1,
 	documentation => q{The URL to the remote nagios plugin},
 );
-
-sub BUILDARGS {
-	my (@args) = @_;
-
-	if (defined Scalar::Util::blessed($args[0])) {
-		# Call subclass BUILDARGS first
-		@args = $args[0]->SUPER::BUILDARGS(@args);
-	}
-
-	# Parse the arguments
-	my ($class, $args) = @args;
-
-	if (keys %{$args} == 0) {
-		# Since there are no arguments, initiate from @ARGV
-		my @attributes = $class->meta->get_all_attributes;
-
-		# Reduce the list to not include private attributes
-		@attributes = grep {$_->name !~ m{\A _}msx} @attributes;
-
-		# Map the attributes into options
-		my @options = map {[
-			sprintf('%s=s', $_->name),
-			$_->documentation,
-		]} @attributes;
-
-		my ($options, $usage) = Getopt::Long::Descriptive::describe_options('Usage: %c %o', @options);
-
-		# Set the args to the parsed options
-		$args = $options;
-	}
-
-	# Return the argument hash and class
-	return $class, $args;
-}
 
 # Make immutable
 __PACKAGE__->meta->make_immutable;
@@ -97,13 +63,11 @@ protocol.
 
 =item * L<Carp>
 
-=item * L<use Getopt::Long::Descriptive> 0.074
-
 =item * L<Moose> 0.74
 
-=item * L<MooseX::StrictConstructor> 0.08
+=item * L<MooseX::Getopt>
 
-=item * L<Scalar::Util> 1.19
+=item * L<MooseX::StrictConstructor> 0.08
 
 =back
 
