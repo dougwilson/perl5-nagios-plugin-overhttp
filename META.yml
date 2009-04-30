@@ -18,6 +18,8 @@ no_index:
   directory:
     - inc
     - t
+requires:
+  perl: 5.8.0
 resources:
   license: http://opensource.org/licenses/gpl-license.php
 version: 0.01

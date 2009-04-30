@@ -1,5 +1,6 @@
 package Nagios::Plugin::OverHTTP;
 
+use 5.008;
 use warnings;
 use strict;
 
