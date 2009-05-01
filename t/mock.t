@@ -46,7 +46,7 @@ isnt($plugin->has_message, 1, 'Has no message yet');
 isnt($plugin->has_status, 1, 'Has no status yet');
 is($plugin->status, 0, 'Good plugin has OK status');
 like($plugin->message, qr/\A OK/msx, 'OK plugin message');
-like($plugin->message, qr/I am good/ms, 'Plugin custom message');
+is($plugin->message, 'OK - I am good', 'Plugin custom message');
 
 $plugin->url('http://example.net/nagios/check_500');
 
