@@ -14,8 +14,16 @@ use Carp ();
 use LWP::UserAgent ();
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
+use Readonly;
+use Switch qw(switch);
 
 with 'MooseX::Getopt';
+
+# Constants
+Readonly our $STATUS_OK       => 0;
+Readonly our $STATUS_WARNING  => 1;
+Readonly our $STATUS_CRITICAL => 2;
+Readonly our $STATUS_UNKNOWN  => 3;
 
 # Attributes
 
@@ -44,6 +52,7 @@ has 'url' => (
 	isa           => 'Str',
 	required      => 1,
 	documentation => q{The URL to the remote nagios plugin},
+	trigger       => sub { shift->_clear_state; },
 );
 
 has 'useragent' => (
@@ -57,8 +66,38 @@ has 'useragent' => (
 sub check {
 	my ($self) = @_;
 
-	$self->{message} = 'test';
-	$self->{status} = 'test';
+	# Get the response of the plugin
+	my $response = $self->useragent->get($self->url);
+
+	if ($response->code =~ m{\A5}msx) {
+		# There was some type of internal error
+		$self->_set_state($STATUS_CRITICAL, sprintf '%d %s', $response->code, $response->message);
+		return;
+	}
+	elsif (!$response->is_success) {
+		# The response was not a success
+		$self->_set_state($STATUS_UNKNOWN, sprintf '%d %s', $response->code, $response->message);
+		return;
+	}
+
+	my %status_prefix_map = (
+		OK       => $STATUS_OK,
+		WARNING  => $STATUS_WARNING,
+		CRITICAL => $STATUS_CRITICAL,
+		UNKNOWN  => $STATUS_UNKNOWN,
+	);
+
+	# By default we do not know the status
+	my $status = $STATUS_UNKNOWN;
+
+	if (my ($inc_status) = $response->decoded_content =~ m{\A([A-Z]+)}msx) {
+		if (exists $status_prefix_map{$inc_status}) {
+			$status = $status_prefix_map{$inc_status};
+		}
+	}
+
+	$self->_set_state($status, $response->decoded_content);
+	return;
 }
 
 sub _build_message {
@@ -77,6 +116,35 @@ sub _build_status {
 	$self->check;
 
 	return $self->{status};
+}
+
+sub _clear_state {
+	my ($self) = @_;
+
+	$self->_clear_message;
+	$self->_clear_status;
+
+	return;
+}
+
+sub _set_state {
+	my ($self, $status, $message) = @_;
+
+	my %status_prefix_map = (
+		$STATUS_OK       => 'OK',
+		$STATUS_WARNING  => 'WARNING',
+		$STATUS_CRITICAL => 'CRITICAL',
+		$STATUS_UNKNOWN  => 'UNKNOWN',
+	);
+
+	if ($message !~ m{\A $status_prefix_map{$status}}msx) {
+		$message = sprintf '%s - %s', $status_prefix_map{$status}, $message;
+	}
+
+	$self->{message} = $message;
+	$self->{status}  = $status;
+
+	return;
 }
 
 # Make immutable
@@ -110,6 +178,13 @@ Version 0.01
 
 This Nagios plugin provides a way to check services remotely over the HTTP
 protocol.
+
+=head1 METHODS
+
+=head2 check
+
+This will run the remote check. This is usually not needed, as attempting to
+access the message or status will result in the check being performed.
 
 =head1 DEPENDENCIES
 
