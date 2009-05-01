@@ -7,5 +7,9 @@ use warnings 'all';
 
 use Nagios::Plugin::OverHTTP;
 
+# Script metadata
+our $AUTHORITY = 'cpan:DOUGDUDE';
+our $VERSION   = '0.01';
+
 # Make a plugin instance, run, and exit
 exit Nagios::Plugin::OverHTTP->new_with_options->run;
