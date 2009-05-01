@@ -89,8 +89,13 @@ sub check {
 
 	# By default we do not know the status
 	my $status = $STATUS_UNKNOWN;
+	my $status_header = $response->header('X-Nagios-Status');
 
-	if (my ($inc_status) = $response->decoded_content =~ m{\A([A-Z]+)}msx) {
+	if (defined $status_header && exists $status_prefix_map{$status_header}) {
+		# Get the status from the header if present
+		$status = $status_prefix_map{$status_header};
+	}
+	elsif (my ($inc_status) = $response->decoded_content =~ m{\A([A-Z]+)}msx) {
 		if (exists $status_prefix_map{$inc_status}) {
 			$status = $status_prefix_map{$inc_status};
 		}
