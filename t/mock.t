@@ -4,7 +4,7 @@ use strict;
 use warnings 'all';
 
 use Test::MockObject;
-use Test::More tests => 17;
+use Test::More tests => 18;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -46,6 +46,7 @@ isnt($plugin->has_message, 1, 'Has no message yet');
 isnt($plugin->has_status, 1, 'Has no status yet');
 is($plugin->status, 0, 'Good plugin has OK status');
 like($plugin->message, qr/\A OK/msx, 'OK plugin message');
+like($plugin->message, qr/I am good/ms, 'Plugin custom message');
 
 $plugin->url('http://example.net/nagios/check_500');
 
