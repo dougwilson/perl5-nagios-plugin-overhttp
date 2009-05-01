@@ -100,6 +100,16 @@ sub check {
 	return;
 }
 
+sub run {
+	my ($self) = @_;
+
+	# Print the message to stdout
+	print $self->message;
+
+	# Return the status code
+	return $self->status;
+}
+
 sub _build_message {
 	my ($self) = @_;
 
@@ -185,6 +195,16 @@ protocol.
 
 This will run the remote check. This is usually not needed, as attempting to
 access the message or status will result in the check being performed.
+
+=head2 run
+
+This will run the plugin in a standard way. The message will be printed to
+standard output and the status code will be returned. Good for doing the
+following:
+
+  my $plugin = Plugin::Nagios::OverHTTP->new_with_options;
+
+  exit $plugin->run;
 
 =head1 DEPENDENCIES
 
