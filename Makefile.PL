@@ -12,6 +12,7 @@ requires 'LWP::UserAgent'            => 0;
 requires 'Moose'                     => '0.74';
 requires 'MooseX::Getopt'            => '0.18';
 requires 'MooseX::StrictConstructor' => '0.08';
+requires 'Readonly'                  => 0;
 requires 'Scalar::Util'              => '1.19';
 
 build_requires 'Test::MockObject';

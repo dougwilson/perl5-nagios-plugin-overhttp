@@ -223,6 +223,8 @@ following:
 
 =item * L<MooseX::StrictConstructor> 0.08
 
+=item * L<Readonly>
+
 =back
 
 =head1 AUTHOR

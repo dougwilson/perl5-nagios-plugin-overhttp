@@ -25,6 +25,7 @@ requires:
   Moose: 0.74
   MooseX::Getopt: 0.18
   MooseX::StrictConstructor: 0.08
+  Readonly: 0
   Scalar::Util: 1.19
   perl: 5.8.1
 resources:
