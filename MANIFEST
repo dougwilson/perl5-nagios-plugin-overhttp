@@ -12,7 +12,7 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Nagios/Plugin/OverHTTP.pm
 Makefile.PL
-MANIFEST
+MANIFEST			This list of files
 META.yml
 README
 t/00-load.t
@@ -22,6 +22,5 @@ t/author/perl-version.t
 t/author/perlcriticrc
 t/author/pod-coverage.t
 t/author/pod.t
-t/boilerplate.t
 t/commandline.t
 t/mock.t
