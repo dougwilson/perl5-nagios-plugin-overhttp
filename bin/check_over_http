@@ -1,0 +1,11 @@
+#!/usr/bin/perl
+
+use 5.008001;
+use strict;
+use utf8;
+use warnings 'all';
+
+use Nagios::Plugin::OverHTTP;
+
+# Make a plugin instance, run, and exit
+exit Nagios::Plugin::OverHTTP->new_with_options->run;

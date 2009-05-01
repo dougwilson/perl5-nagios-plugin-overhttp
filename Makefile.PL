@@ -15,6 +15,8 @@ requires 'Scalar::Util'              => '1.19';
 build_requires 'Test::MockObject';
 build_requires 'Test::More';
 
+install_script 'bin/check_over_http';
+
 # Enable tests to be in multi-level directories
 tests_recursive;
 
