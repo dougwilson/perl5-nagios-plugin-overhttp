@@ -14,6 +14,7 @@ requires 'MooseX::Getopt'            => '0.18';
 requires 'MooseX::StrictConstructor' => '0.08';
 requires 'Readonly'                  => 0;
 requires 'Scalar::Util'              => '1.19';
+requires 'version'                   => '0.74';
 
 build_requires 'Test::MockObject';
 build_requires 'Test::More';

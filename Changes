@@ -1,5 +1,8 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.03    Tue, May 5, 2009 19:52:12 -0500
+        Fixed issue where version was not listed as a dependency
+
 0.02    Fri, May 1, 2009 12:30:21 -0500
         Fixed issue where Readonly was not listed as a dependency
 

@@ -28,8 +28,9 @@ requires:
   Readonly: 0
   Scalar::Util: 1.19
   perl: 5.8.1
+  version: 0.74
 resources:
   homepage: http://github.com/dougwilson/perl5-nagios-plugin-overhttp/tree/master
   license: http://dev.perl.org/licenses/
   repository: git://github.com/dougwilson/perl5-nagios-plugin-overhttp.git
-version: 0.02
+version: 0.03
