@@ -15,7 +15,6 @@ use LWP::UserAgent ();
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
 use Readonly;
-use Switch qw(switch);
 
 with 'MooseX::Getopt';
 
