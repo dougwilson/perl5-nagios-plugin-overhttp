@@ -1,5 +1,13 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.04    Wed, May 13, 2009 23:06:12 -0500
+        Added new options to the plugin:
+          --hostname
+          --path
+          --ssl
+        Added parameter constraint checking
+        Removed unused Switch from code to make perl 5.11.0 happy
+
 0.03    Tue, May 5, 2009 19:52:12 -0500
         Fixed issue where version was not listed as a dependency
 
