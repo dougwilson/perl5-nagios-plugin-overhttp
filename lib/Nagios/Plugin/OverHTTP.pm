@@ -330,6 +330,12 @@ Version 0.04
       url => 'https://myserver.net/nagios/check_some_service.cgi',
   );
 
+  my $plugin = Nagios::Plugin::OverHTTP->new(
+      hostname => 'myserver.net',
+      path     => '/nagios/check_some_service.cgi',
+      ssl      => 1,
+  );
+
   my $status  = $plugin->status;
   my $message = $plugin->message;
 
