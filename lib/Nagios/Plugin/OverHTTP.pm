@@ -14,7 +14,13 @@ use Carp ();
 use LWP::UserAgent ();
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
+use Nagios::Plugin::OverHTTP::Library qw(
+	Hostname
+	Path
+	URL
+);
 use Readonly;
+use URI;
 
 with 'MooseX::Getopt';
 
@@ -26,9 +32,28 @@ Readonly our $STATUS_UNKNOWN  => 3;
 
 # Attributes
 
+has 'hostname' => (
+	is            => 'rw',
+	isa           => Hostname,
+	documentation => q{The hostname on which the URL is located},
+
+	builder       => '_build_hostname',
+	lazy          => 1,
+	trigger       => sub {
+		my ($self) = @_;
+
+		# Clear the state
+		$self->_clear_state;
+
+		# Clear the URL
+		$self->_clear_url;
+	},
+);
+
 has 'message' => (
 	is            => 'ro',
 	isa           => 'Str',
+
 	builder       => '_build_message',
 	clearer       => '_clear_message',
 	lazy          => 1,
@@ -36,9 +61,49 @@ has 'message' => (
 	traits        => ['NoGetopt'],
 );
 
+has 'path' => (
+	is            => 'rw',
+	isa           => Path,
+	documentation => q{The path of the plugin on the host},
+
+	coerce        => 1,
+	lazy          => 1,
+	builder       => '_build_path',
+	trigger       => sub {
+		my ($self) = @_;
+
+		# Clear the state
+		$self->_clear_state;
+
+		# Clear the URL
+		$self->_clear_url;
+	},
+);
+
+has 'ssl' => (
+	is            => 'rw',
+	isa           => 'Bool',
+	documentation => q{Whether to use SSL},
+
+	builder       => '_build_ssl',
+	clearer       => '_clear_ssl',
+	lazy          => 1,
+	predicate     => '_has_ssl',
+	trigger       => sub {
+		my ($self) = @_;
+
+		# Clear the state
+		$self->_clear_state;
+
+		# Clear the URL
+		$self->_clear_url;
+	},
+);
+
 has 'status' => (
 	is            => 'ro',
 	isa           => 'Int',
+
 	builder       => '_build_status',
 	clearer       => '_clear_status',
 	lazy          => 1,
@@ -48,15 +113,28 @@ has 'status' => (
 
 has 'url' => (
 	is            => 'rw',
-	isa           => 'Str',
-	required      => 1,
+	isa           => URL,
 	documentation => q{The URL to the remote nagios plugin},
-	trigger       => sub { shift->_clear_state; },
+
+	builder       => '_build_url',
+	clearer       => '_clear_url',
+	lazy          => 1,
+	predicate     => '_has_url',
+	trigger       => sub {
+		my ($self) = @_;
+
+		# Clear the state
+		$self->_clear_state;
+
+		# Populate out other properties from the URL
+		$self->_populate_from_url;
+	},
 );
 
 has 'useragent' => (
 	is            => 'rw',
 	isa           => 'LWP::UserAgent',
+
 	default       => sub { LWP::UserAgent->new; },
 	lazy          => 1,
 	traits        => ['NoGetopt'],
@@ -114,6 +192,15 @@ sub run {
 	return $self->status;
 }
 
+sub _build_hostname {
+	my ($self) = @_;
+
+	# Build the hostname off the URL
+	$self->_populate_from_url;
+
+	return $self->{hostname};
+}
+
 sub _build_message {
 	my ($self) = @_;
 
@@ -121,6 +208,24 @@ sub _build_message {
 	$self->check;
 
 	return $self->{message};
+}
+
+sub _build_path {
+	my ($self) = @_;
+
+	# Build the path off the URL
+	$self->_populate_from_url;
+
+	return $self->{path};
+}
+
+sub _build_ssl {
+	my ($self) = @_;
+
+	# Build the SSL off the URL
+	$self->_populate_from_url;
+
+	return $self->{ssl};
 }
 
 sub _build_status {
@@ -132,13 +237,52 @@ sub _build_status {
 	return $self->{status};
 }
 
+sub _build_url {
+	my ($self) = @_;
+
+	# Form the URI object
+	my $url = URI->new(sprintf 'http://%s%s', $self->{hostname}, $self->{path});
+
+	if ($self->_has_ssl && $self->ssl) {
+		# Set the SSL scheme
+		$url->scheme('https');
+	}
+
+	# Set the URL
+	return $url->as_string;
+}
+
 sub _clear_state {
 	my ($self) = @_;
 
 	$self->_clear_message;
 	$self->_clear_status;
 
-	return;
+	# Nothing useful to return, so chain
+	return $self;
+}
+
+sub _populate_from_url {
+	my ($self) = @_;
+
+	if (!$self->_has_url) {
+		Carp::croak 'Unable to build requested attributes, as no URL as been defined';
+	}
+
+	# Create a URI object from the url
+	my $uri = URI->new($self->{url});
+
+	# Set the hostname
+	$self->{hostname} = $uri->host;
+
+	# Set the path
+	$self->{path} = to_Path($uri->path);
+
+	# Set SSL state
+	$self->{ssl} = $uri->scheme eq 'https';
+
+	# Nothing useful to return, so chain
+	return $self;
 }
 
 sub _set_state {
@@ -158,7 +302,8 @@ sub _set_state {
 	$self->{message} = $message;
 	$self->{status}  = $status;
 
-	return;
+	# Nothing useful to return, so chain
+	return $self;
 }
 
 # Make immutable
@@ -223,6 +368,8 @@ following:
 =item * L<MooseX::StrictConstructor> 0.08
 
 =item * L<Readonly>
+
+=item * L<URI>
 
 =back
 
