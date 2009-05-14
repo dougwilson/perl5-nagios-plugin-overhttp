@@ -37,4 +37,4 @@ resources:
   homepage: http://github.com/dougwilson/perl5-nagios-plugin-overhttp/tree/master
   license: http://dev.perl.org/licenses/
   repository: git://github.com/dougwilson/perl5-nagios-plugin-overhttp.git
-version: 0.04
+version: 0.05

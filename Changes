@@ -1,5 +1,9 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.05    Thu, May 14, 2009 11:07:11 -0500
+        MANIFEST was missing 2 files, and so was the distribution
+        Version 0.04 will never successfully install
+
 0.04    Wed, May 13, 2009 23:06:12 -0500
         Added new options to the plugin:
           --hostname

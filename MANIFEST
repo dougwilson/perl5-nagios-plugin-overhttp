@@ -10,11 +10,13 @@ inc/Module/Install/Scripts.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Nagios/Plugin/OverHTTP.pm
+lib/Nagios/Plugin/OverHTTP/Library.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
 README
 t/00-load.t
+t/attributes.t
 t/author/critic.t
 t/author/kwalitee.t
 t/author/perl-version.t
