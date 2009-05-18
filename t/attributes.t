@@ -3,7 +3,7 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 19;
+use Test::More tests => 23;
 
 use_ok('Nagios::Plugin::OverHTTP');
 
@@ -45,9 +45,15 @@ is($plugin->hostname, 'server1', 'hostname stil the same');
 is($plugin->path, '/check_new', 'path updated');
 is($plugin->ssl, 1, 'SSL still the same');
 
-
-
 # Change to blank path
 $plugin->path(q{});
 is($plugin->path, '/', 'Blank path changed to /');
 is($plugin->url, 'https://server1/', 'Blank path correct in URL');
+
+# Change the timeout
+isnt($plugin->has_timeout, 1, 'Has no timeout');
+$plugin->timeout(2);
+is($plugin->has_timeout, 1, 'Has timeout');
+is($plugin->timeout, 2, 'timeout updates');
+$plugin->clear_timeout;
+isnt($plugin->has_timeout, 1, 'timeout cleared');
