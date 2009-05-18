@@ -3,8 +3,11 @@
 use strict;
 use warnings 'all';
 
+use HTTP::Response;
+use Test::More;
 use Test::MockObject;
-use Test::More tests => 37;
+
+plan tests => 43;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -15,7 +18,7 @@ use_ok('Nagios::Plugin::OverHTTP');
 $fake_ua->mock('get', sub {
 	my ($self, $url) = @_;
 
-	eval 'use HTTP::Response';
+	my $time_start = time;
 
 	($url) = $url =~ m{/(\w+)\z}msx;
 	my $res;
@@ -26,6 +29,10 @@ $fake_ua->mock('get', sub {
 	elsif ($url =~ m{_(\d{3})\z}msx) {
 		$res = HTTP::Response->new($1, 'Some status', undef, 'OK - I am some result');
 	}
+	elsif ($url =~ m{_time_(\d+)\z}msx) {
+		sleep $1;
+		$res = HTTP::Response->new(200, 'Some status', undef, 'OK - I am some result');
+	}
 	elsif ($url eq 'check_ok_header') {
 		$res = HTTP::Response->new(200, 'OK', undef, 'OK - I am good');
 		$res->header('X-Nagios-Status' => 'WARNING');
@@ -34,7 +41,22 @@ $fake_ua->mock('get', sub {
 		$res = HTTP::Response->new(404, 'Not Found');
 	}
 
+	if (time - $time_start > $self->timeout) {
+		$res = HTTP::Response->new(500, 'read timeout', undef, '500 read timeout');
+	}
+
 	return $res;
+});
+$fake_ua->mock('timeout', sub {
+	my ($self, $timeout) = @_;
+
+	my $old_timeout = $self->{timeout} || 180;
+
+	if (defined $timeout) {
+		$self->{timeout} = $timeout;
+	}
+
+	return $old_timeout;
 });
 
 my $plugin = new_ok('Nagios::Plugin::OverHTTP' => [
@@ -54,6 +76,19 @@ check_url($plugin, 'http://example.net/nagios/check_CRITICAL' , 2, 'CRITICAL - I
 check_url($plugin, 'http://example.net/nagios/check_UNKNOWN'  , 3, 'UNKNOWN - I am something', 'UNKNOWN');
 check_url($plugin, 'http://example.net/nagios/check_500'      , 2, qr/\ACRITICAL/msx, '500');
 check_url($plugin, 'http://example.net/nagios/check_ok_header', 1, qr/\AWARNING - OK/ms, 'Header override');
+
+##############################
+# TIMEOUT TESTS
+isnt($plugin->has_timeout, 1, 'Has not timeout yet');
+$plugin->timeout(10);
+is($plugin->has_timeout, 1, 'Has timeout');
+is($plugin->timeout, 10, 'Timeout set');
+$plugin->url('http://example.net/nagios/check_time_15');
+is($plugin->status, 2, 'Timeout should be CRITICAL');
+$plugin->url('http://example.net/nagios/check_time_6');
+is($plugin->status, 0, 'Timeout did not occur');
+$plugin->clear_timeout;
+isnt($plugin->has_timeout, 1, 'Timeout cleared');
 
 exit 0;
 

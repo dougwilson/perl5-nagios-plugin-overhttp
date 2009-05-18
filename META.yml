@@ -4,6 +4,7 @@ author:
   - 'Douglas Christopher Wilson <doug@somethingdoug.com>'
 build_requires:
   ExtUtils::MakeMaker: 6.42
+  HTTP::Response: 0
   Test::MockObject: 0
   Test::More: 0
 configure_requires:

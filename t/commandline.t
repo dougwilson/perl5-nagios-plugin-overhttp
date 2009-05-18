@@ -3,7 +3,7 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 11;
+use Test::More tests => 12;
 
 use_ok('Nagios::Plugin::OverHTTP');
 
@@ -23,6 +23,7 @@ SKIP: {
 	like($err, qr/\s+--hostname\s+/msx, 'hostname should be in usage');
 	like($err, qr/\s+--path\s+/msx, 'path should be in usage');
 	like($err, qr/\s+--ssl\s+/msx, 'ssl should be in usage');
+	like($err, qr/\s+--timeout\s+/msx, 'timeout should be in usage');
 	like($err, qr/\s+--url\s+/msx, 'url should be in usage');
 
 	unlike($err, qr/\s+--message\s+/msx, 'message should not be in usage');

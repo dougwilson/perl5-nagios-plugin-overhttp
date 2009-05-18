@@ -17,6 +17,7 @@ use MooseX::StrictConstructor 0.08;
 use Nagios::Plugin::OverHTTP::Library qw(
 	Hostname
 	Path
+	Timeout
 	URL
 );
 use Readonly;
@@ -100,6 +101,15 @@ has 'ssl' => (
 	},
 );
 
+has 'timeout' => (
+	is            => 'rw',
+	isa           => Timeout,
+	documentation => q{The HTTP request timeout in seconds},
+
+	clearer       => 'clear_timeout',
+	predicate     => 'has_timeout',
+);
+
 has 'status' => (
 	is            => 'ro',
 	isa           => 'Int',
@@ -143,8 +153,20 @@ has 'useragent' => (
 sub check {
 	my ($self) = @_;
 
+	# Save the current timeout for the useragent
+	my $old_timeout = $self->useragent->timeout;
+
+	# Set the useragent's timeout to our timeout
+	# if a timeout has been declared.
+	if ($self->has_timeout) {
+		$self->useragent->timeout($self->timeout);
+	}
+
 	# Get the response of the plugin
 	my $response = $self->useragent->get($self->url);
+
+	# Restore the previous timeout value to the useragent
+	$self->useragent->timeout($old_timeout);
 
 	if ($response->code =~ m{\A5}msx) {
 		# There was some type of internal error

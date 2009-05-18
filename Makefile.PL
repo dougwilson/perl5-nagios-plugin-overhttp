@@ -20,6 +20,7 @@ requires 'Scalar::Util'              => '1.19';
 requires 'URI'                       => 0;
 requires 'version'                   => '0.74';
 
+build_requires 'HTTP::Response';
 build_requires 'Test::MockObject';
 build_requires 'Test::More';
 
