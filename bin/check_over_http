@@ -13,4 +13,4 @@ our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION   = '0.06';
 
 # Make a plugin instance, run, and exit
-exit Nagios::Plugin::OverHTTP->new_with_options->run;
+exit Nagios::Plugin::OverHTTP->new_with_options(timeout => 10)->run;
