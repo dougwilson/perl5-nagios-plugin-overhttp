@@ -1,5 +1,11 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.06    Mon, May 18, 2009 21:08:12 -0500
+        Added MANIFEST author test
+        Added documentation for the constructors
+        New option to the plugin:
+          --timeout
+
 0.05    Thu, May 14, 2009 11:07:11 -0500
         MANIFEST was missing 2 files, and so was the distribution
         Version 0.04 will never successfully install

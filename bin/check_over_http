@@ -10,7 +10,7 @@ use Nagios::Plugin::OverHTTP;
 
 # Script metadata
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.05';
+our $VERSION   = '0.06';
 
 # Make a plugin instance, run, and exit
 exit Nagios::Plugin::OverHTTP->new_with_options->run;
