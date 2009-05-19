@@ -26,4 +26,5 @@ t/author/perlcriticrc
 t/author/pod-coverage.t
 t/author/pod.t
 t/commandline.t
+t/constructor.t
 t/mock.t

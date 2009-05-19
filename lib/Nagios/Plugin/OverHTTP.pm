@@ -366,6 +366,66 @@ Version 0.05
 This Nagios plugin provides a way to check services remotely over the HTTP
 protocol.
 
+=head1 CONSTRUCTOR
+
+This is fully object-oriented, and as such before any method can be used, the
+constructor needs to be called to create an object to work with.
+
+=head2 new
+
+This will construct a new plugin object.
+
+=head3 hostname
+
+This is the hostname of the remote server. This will automatically be populated
+if L</url> is set.
+
+=head3 path
+
+This is the path to the remove Nagios plugin on the remote server. This will
+automatically be populated if L</url> is set.
+
+=head3 ssl
+
+This is a boolean of weither or not to use SSL over HTTP (HTTPS). This defaults
+to false and will automatically be updated to true if a HTTPS URL is set to
+L</url>.
+
+=head3 timeout
+
+This is a positive integer for the timeout of the HTTP request. If set, this
+will override any timeout defined in the useragent for the duration of the
+request. The plugin will not permanently alter the timeout in the useragent.
+This defaults to not being set, and so the useragent's timeout is used.
+
+=head3 url
+
+This is the URL of the remote Nagios plugin to check. If not supplied, this will
+be constructed automatically from the L</hostname> and L</path> attributes.
+
+=head3 useragent
+
+This is the useragent to use when making requests. This defaults to
+L<LWP::Useragent> with no options. Currently this must be an L<LWP::Useragent>
+object.
+
+=head2 new_with_options
+
+This is identical to L</new>, except with the additional feature of reading the
+C<@ARGV> in the invoked scope (NOTE: a HASHREF cannot be provided as the
+constructing argument due to a bug in L<MooseX::Getopt>). C<@ARGV> will be
+parsed for command-line arguments. The command-line can contain any variable
+that L</new> can take. Arguments should be in the following format on the
+command line:
+
+  --url=http://example.net/check_something
+  --url http://example.net/check_something
+  # Note that quotes may be used, based on your shell environment
+
+  # For bools, like SSL, you would use:
+  --ssl    # Enable SSL
+  --no-ssl # Disable SSL
+
 =head1 METHODS
 
 =head2 check
@@ -406,6 +466,9 @@ following:
 Douglas Christopher Wilson, C<< <doug at somethingdoug.com> >>
 
 =head1 BUGS AND LIMITATIONS
+
+C<new_with_options> does not support a single HASHREF argument. Waiting on fix
+in L<https://rt.cpan.org/Ticket/Display.html?id=46200>.
 
 Please report any bugs or feature requests to
 C<bug-authen-cas-external at rt.cpan.org>, or through the web interface at
