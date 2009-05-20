@@ -1,5 +1,12 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.07    Wed, May 20, 2009 19:10:43 -0500
+        Changed check_over_http to a default timeout of 10 seconds
+        Plugin dies if not enough information provided before a check
+        Added documentation for the HTTP respose format
+        Allow X-Nagios-Status to be digits
+
+
 0.06    Mon, May 18, 2009 21:08:12 -0500
         Added MANIFEST author test
         Added documentation for the constructors

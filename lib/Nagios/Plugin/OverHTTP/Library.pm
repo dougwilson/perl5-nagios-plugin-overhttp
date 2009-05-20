@@ -8,7 +8,7 @@ use warnings 'all';
 
 # Module metadata
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use MooseX::Types 0.08 -declare => [qw(
 	Hostname
@@ -61,7 +61,7 @@ Nagios::Plugin::OverHTTP::Library - Types library
 
 =head1 VERSION
 
-This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.06
+This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.07
 
 =head1 SYNOPSIS
 
