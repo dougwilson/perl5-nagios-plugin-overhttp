@@ -39,7 +39,9 @@ has 'hostname' => (
 	documentation => q{The hostname on which the URL is located},
 
 	builder       => '_build_hostname',
+	clearer       => '_clear_hostname',
 	lazy          => 1,
+	predicate     => '_has_hostname',
 	trigger       => sub {
 		my ($self) = @_;
 
@@ -67,9 +69,11 @@ has 'path' => (
 	isa           => Path,
 	documentation => q{The path of the plugin on the host},
 
+	builder       => '_build_path',
+	clearer       => '_clear_path',
 	coerce        => 1,
 	lazy          => 1,
-	builder       => '_build_path',
+	predicate     => '_has_path',
 	trigger       => sub {
 		my ($self) = @_;
 
@@ -268,6 +272,13 @@ sub _build_status {
 
 sub _build_url {
 	my ($self) = @_;
+
+	if (!$self->_has_hostname) {
+		Carp::croak 'Unable to build the URL due to no hostname being provided';
+	}
+	elsif (!$self->_has_path) {
+		Carp::croak 'Unable to build the URL due to no path being provided.';
+	}
 
 	# Form the URI object
 	my $url = URI->new(sprintf 'http://%s%s', $self->{hostname}, $self->{path});
