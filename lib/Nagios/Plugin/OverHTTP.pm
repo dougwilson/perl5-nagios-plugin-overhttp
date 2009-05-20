@@ -528,6 +528,26 @@ The different possibilities for this is listed in L</NAGIOS STATUSES>
 
 =back
 
+=head2 EXAMPLE
+
+The following is an example of a simple bootstrapping of a plugin on a remote
+server.
+
+  #!/usr/bin/env perl
+  
+  use strict;
+  use warnings;
+  
+  my $output = qx{/usr/local/libexec/nagios/check_users2 -w 100 -c 500};
+  
+  my $status = $? > 0 ? $? >> 8 : 3;
+  
+  printf "X-Nagios-Header: %d\n", $status;
+  print  "Content-Type: text/plain\n\n";
+  print  $output if $output;
+  
+  exit 0;
+
 =head1 DEPENDENCIES
 
 =over 4
