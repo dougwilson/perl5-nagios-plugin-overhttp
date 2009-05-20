@@ -198,17 +198,29 @@ sub check {
 	);
 
 	# By default we do not know the status
-	my $status = $STATUS_UNKNOWN;
+	my $status;
 	my $status_header = $response->header('X-Nagios-Status');
 
-	if (defined $status_header && exists $status_prefix_map{$status_header}) {
+	if (defined $status_header) {
 		# Get the status from the header if present
-		$status = $status_prefix_map{$status_header};
+		if ($status_header =~ m{\A [0123] \z}msx) {
+			# The status header is the decimal status
+			$status = $status_header;
+		}
+		elsif (exists $status_prefix_map{$status_header}) {
+			# The status header is the word of the status
+			$status = $status_prefix_map{$status_header};
+		}
 	}
 	elsif (my ($inc_status) = $response->decoded_content =~ m{\A([A-Z]+)}msx) {
 		if (exists $status_prefix_map{$inc_status}) {
 			$status = $status_prefix_map{$inc_status};
 		}
+	}
+
+	if (!defined $status) {
+		# The status was not found in the response
+		$status = $STATUS_UNKNOWN;
 	}
 
 	$self->_set_state($status, $response->decoded_content);
@@ -489,8 +501,9 @@ what the status code will be, the following methods are used:
 =item 1.
 
 If a the header C<X-Nagios-Status> is present, the value from that is used as
-the output. The content of this header MUST be an all capital letters. The
-different possibilities for this is listed in L</NAGIOS STATUSES>.
+the output. The content of this header MUST be either the decimal return value
+of the plugin or an all capital letters. The different possibilities for this
+is listed in L</NAGIOS STATUSES>.
 
 =item 2.
 
@@ -505,13 +518,13 @@ The different possibilities for this is listed in L</NAGIOS STATUSES>
 
 =over 4
 
-=item * OK
+=item 0 OK
 
-=item * WARNING
+=item 1 WARNING
 
-=item * CRITICAL
+=item 2 CRITICAL
 
-=item * UNKNOWN
+=item 3 UNKNOWN
 
 =back
 

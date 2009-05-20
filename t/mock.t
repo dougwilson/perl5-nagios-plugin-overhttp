@@ -7,7 +7,7 @@ use HTTP::Response;
 use Test::More;
 use Test::MockObject;
 
-plan tests => 43;
+plan tests => 48;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -32,6 +32,10 @@ $fake_ua->mock('get', sub {
 	elsif ($url =~ m{_time_(\d+)\z}msx) {
 		sleep $1;
 		$res = HTTP::Response->new(200, 'Some status', undef, 'OK - I am some result');
+	}
+	elsif ($url =~ m{_(\d)_header\z}msx) {
+		$res = HTTP::Response->new(200, 'Some status', undef, 'I am some result');
+		$res->header('X-Nagios-Status' => $1);
 	}
 	elsif ($url eq 'check_ok_header') {
 		$res = HTTP::Response->new(200, 'OK', undef, 'OK - I am good');
@@ -70,12 +74,13 @@ isnt($plugin->has_status, 1, 'Has no status yet');
 is($plugin->status, 3, 'Nonexistant plugin has UNKNOWN status');
 like($plugin->message, qr/\A UNKNOWN .+ Not \s Found/msx, 'Nonexistant plugin message');
 
-check_url($plugin, 'http://example.net/nagios/check_OK'       , 0, 'OK - I am something', 'OK');
-check_url($plugin, 'http://example.net/nagios/check_WARNING'  , 1, 'WARNING - I am something', 'WARNING');
+check_url($plugin, 'http://example.net/nagios/check_OK'       , 0, 'OK - I am something'      , 'OK');
+check_url($plugin, 'http://example.net/nagios/check_WARNING'  , 1, 'WARNING - I am something' , 'WARNING');
 check_url($plugin, 'http://example.net/nagios/check_CRITICAL' , 2, 'CRITICAL - I am something', 'CRITICAL');
-check_url($plugin, 'http://example.net/nagios/check_UNKNOWN'  , 3, 'UNKNOWN - I am something', 'UNKNOWN');
-check_url($plugin, 'http://example.net/nagios/check_500'      , 2, qr/\ACRITICAL/msx, '500');
-check_url($plugin, 'http://example.net/nagios/check_ok_header', 1, qr/\AWARNING - OK/ms, 'Header override');
+check_url($plugin, 'http://example.net/nagios/check_UNKNOWN'  , 3, 'UNKNOWN - I am something' , 'UNKNOWN');
+check_url($plugin, 'http://example.net/nagios/check_500'      , 2, qr/\ACRITICAL/msx          , '500');
+check_url($plugin, 'http://example.net/nagios/check_ok_header', 1, qr/\AWARNING - OK/ms       , 'Header override');
+check_url($plugin, 'http://example.net/nagios/check_2_header' , 2, qr//ms                     , 'Numberic header');
 
 ##############################
 # TIMEOUT TESTS
