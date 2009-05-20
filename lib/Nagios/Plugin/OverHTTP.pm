@@ -461,6 +461,60 @@ following:
 
   exit $plugin->run;
 
+=head1 PROTOCOL
+
+=head2 HTTP STATUS
+
+The protocol that this plugin uses to comunicate with the Nagios plugins is
+unique to my knowledge. If anyone knows another way that plugins are
+communicating over HTTP then let me know.
+
+A request that returns a 5xx status will automatically return as CRITICAL and
+the plugin will display the error code and the status message (this will
+typically result in 500 Internal Server Error).
+
+A request that returns a 2xx status will be parsed using the methods listed in
+L</HTTP BODY>.
+
+Any other status code will cause the plugin to return as UNKNOWN and the plugin
+will display the error code and the status message.
+
+=head2 HTTP BODY
+
+The body of the HTTP response will be the output of the plugin. To determine
+what the status code will be, the following methods are used:
+
+=over 4
+
+=item 1.
+
+If a the header C<X-Nagios-Status> is present, the value from that is used as
+the output. The content of this header MUST be an all capital letters. The
+different possibilities for this is listed in L</NAGIOS STATUSES>.
+
+=item 2.
+
+If the header did not conform to proper specifications or was not present, then
+the status will be extracted from the body of the response. The very first set
+of all capital letters is taken from the body and used to determine the result.
+The different possibilities for this is listed in L</NAGIOS STATUSES>
+
+=back
+
+=head2 NAGIOS STATUSES
+
+=over 4
+
+=item * OK
+
+=item * WARNING
+
+=item * CRITICAL
+
+=item * UNKNOWN
+
+=back
+
 =head1 DEPENDENCIES
 
 =over 4
