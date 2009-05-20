@@ -168,7 +168,14 @@ sub check {
 	# Restore the previous timeout value to the useragent
 	$self->useragent->timeout($old_timeout);
 
-	if ($response->code =~ m{\A5}msx) {
+	if ($response->code == 500 && $response->message eq 'read timeout') {
+		# Failure due to timeout
+		my $timeout = $self->has_timeout ? $self->timeout : $self->useragent->timeout;
+
+		$self->_set_state($STATUS_CRITICAL, sprintf 'Socket timeout after %d seconds', $timeout);
+		return;
+	}
+	elsif ($response->code =~ m{\A5}msx) {
 		# There was some type of internal error
 		$self->_set_state($STATUS_CRITICAL, sprintf '%d %s', $response->code, $response->message);
 		return;
