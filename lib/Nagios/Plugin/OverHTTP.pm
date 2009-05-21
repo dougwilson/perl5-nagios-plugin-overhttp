@@ -417,7 +417,7 @@ automatically be populated if L</url> is set.
 
 =head3 ssl
 
-This is a boolean of weither or not to use SSL over HTTP (HTTPS). This defaults
+This is a Boolean of whether or not to use SSL over HTTP (HTTPS). This defaults
 to false and will automatically be updated to true if a HTTPS URL is set to
 L</url>.
 
@@ -477,7 +477,7 @@ following:
 
 =head2 HTTP STATUS
 
-The protocol that this plugin uses to comunicate with the Nagios plugins is
+The protocol that this plugin uses to communicate with the Nagios plugins is
 unique to my knowledge. If anyone knows another way that plugins are
 communicating over HTTP then let me know.
 
