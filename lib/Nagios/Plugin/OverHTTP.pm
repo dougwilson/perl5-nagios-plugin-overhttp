@@ -88,7 +88,7 @@ has 'path' => (
 has 'ssl' => (
 	is            => 'rw',
 	isa           => 'Bool',
-	documentation => q{Whether to use SSL},
+	documentation => q{Whether to use SSL (defaults to no)},
 
 	builder       => '_build_ssl',
 	clearer       => '_clear_ssl',
@@ -108,7 +108,7 @@ has 'ssl' => (
 has 'timeout' => (
 	is            => 'rw',
 	isa           => Timeout,
-	documentation => q{The HTTP request timeout in seconds},
+	documentation => q{The HTTP request timeout in seconds (defaults to nothing)},
 
 	clearer       => 'clear_timeout',
 	predicate     => 'has_timeout',
