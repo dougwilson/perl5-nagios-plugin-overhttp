@@ -186,12 +186,12 @@ sub check {
 	}
 	elsif ($response->code =~ m{\A5}msx) {
 		# There was some type of internal error
-		$self->_set_state($STATUS_CRITICAL, sprintf '%d %s', $response->code, $response->message);
+		$self->_set_state($STATUS_CRITICAL, $response->status_line);
 		return;
 	}
 	elsif (!$response->is_success) {
 		# The response was not a success
-		$self->_set_state($STATUS_UNKNOWN, sprintf '%d %s', $response->code, $response->message);
+		$self->_set_state($STATUS_UNKNOWN, $response->status_line);
 		return;
 	}
 
