@@ -554,6 +554,8 @@ server.
 
 =item * L<Carp>
 
+=item * L<LWP::UserAgent>
+
 =item * L<Moose> 0.74
 
 =item * L<MooseX::Getopt>
