@@ -179,6 +179,11 @@ sub check {
 		$self->_set_state($STATUS_CRITICAL, sprintf 'Socket timeout after %d seconds', $timeout);
 		return;
 	}
+	elsif ($response->code == 500 && $response->message =~ m{\(connect: \s timeout\)}msx) {
+		# Failure to connect to the host server
+		$self->_set_state($STATUS_CRITICAL, 'Connection refused ');
+		return;
+	}
 	elsif ($response->code =~ m{\A5}msx) {
 		# There was some type of internal error
 		$self->_set_state($STATUS_CRITICAL, sprintf '%d %s', $response->code, $response->message);
