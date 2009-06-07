@@ -6,7 +6,7 @@ build_requires:
   ExtUtils::MakeMaker: 6.42
   HTTP::Response: 0
   Test::MockObject: 0
-  Test::More: 0
+  Test::More: 0.82
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
