@@ -11,6 +11,7 @@ our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION = '0.07';
 
 use Carp ();
+use HTTP::Status qw(:constants);
 use LWP::UserAgent ();
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
@@ -172,19 +173,19 @@ sub check {
 	# Restore the previous timeout value to the useragent
 	$self->useragent->timeout($old_timeout);
 
-	if ($response->code == 500 && $response->message eq 'read timeout') {
+	if ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message eq 'read timeout') {
 		# Failure due to timeout
 		my $timeout = $self->has_timeout ? $self->timeout : $self->useragent->timeout;
 
 		$self->_set_state($STATUS_CRITICAL, sprintf 'Socket timeout after %d seconds', $timeout);
 		return;
 	}
-	elsif ($response->code == 500 && $response->message =~ m{\(connect: \s timeout\)}msx) {
+	elsif ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message =~ m{\(connect: \s timeout\)}msx) {
 		# Failure to connect to the host server
 		$self->_set_state($STATUS_CRITICAL, 'Connection refused ');
 		return;
 	}
-	elsif ($response->code =~ m{\A5}msx) {
+	elsif (HTTP::Status::is_server_error($response->code)) {
 		# There was some type of internal error
 		$self->_set_state($STATUS_CRITICAL, $response->status_line);
 		return;
@@ -558,6 +559,8 @@ server.
 =over 4
 
 =item * L<Carp>
+
+=item * L<HTTP::Status>
 
 =item * L<LWP::UserAgent>
 

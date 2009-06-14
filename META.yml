@@ -24,6 +24,7 @@ requires:
   Data::Validate::Domain: 0.02
   Data::Validate::URI: 0.05
   Getopt::Long::Descriptive: 0
+  HTTP::Status: 5.817
   LWP::UserAgent: 0
   Moose: 0.74
   MooseX::Getopt: 0.18
