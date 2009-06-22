@@ -20,6 +20,13 @@ no_index:
   directory:
     - inc
     - t
+provides:
+  Nagios::Plugin::OverHTTP:
+    file: lib/Nagios/Plugin/OverHTTP.pm
+    version: 0.08
+  Nagios::Plugin::OverHTTP::Library:
+    file: lib/Nagios/Plugin/OverHTTP/Library.pm
+    version: 0.08
 requires:
   Data::Validate::Domain: 0.02
   Data::Validate::URI: 0.05

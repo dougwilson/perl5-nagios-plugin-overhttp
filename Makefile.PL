@@ -28,6 +28,8 @@ build_requires 'Test::More'       => '0.82';
 
 install_script 'bin/check_over_http';
 
+auto_provides;
+
 # Enable tests to be in multi-level directories
 tests_recursive;
 
