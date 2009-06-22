@@ -10,9 +10,9 @@ use warnings 'all';
 our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION = '0.08';
 
-use Carp ();
+use Carp qw(croak);
 use HTTP::Status qw(:constants);
-use LWP::UserAgent ();
+use LWP::UserAgent;
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
 use Nagios::Plugin::OverHTTP::Library qw(
@@ -23,6 +23,9 @@ use Nagios::Plugin::OverHTTP::Library qw(
 );
 use Readonly;
 use URI;
+
+# Clean the imports are the end of scope
+use namespace::clean 0.04 -except => [qw(meta)];
 
 with 'MooseX::Getopt';
 
@@ -292,10 +295,10 @@ sub _build_url {
 	my ($self) = @_;
 
 	if (!$self->_has_hostname) {
-		Carp::croak 'Unable to build the URL due to no hostname being provided';
+		croak 'Unable to build the URL due to no hostname being provided';
 	}
 	elsif (!$self->_has_path) {
-		Carp::croak 'Unable to build the URL due to no path being provided.';
+		croak 'Unable to build the URL due to no path being provided.';
 	}
 
 	# Form the URI object
@@ -324,7 +327,7 @@ sub _populate_from_url {
 	my ($self) = @_;
 
 	if (!$self->_has_url) {
-		Carp::croak 'Unable to build requested attributes, as no URL as been defined';
+		croak 'Unable to build requested attributes, as no URL as been defined';
 	}
 
 	# Create a URI object from the url
@@ -366,9 +369,6 @@ sub _set_state {
 
 # Make immutable
 __PACKAGE__->meta->make_immutable;
-
-# Clean out Moose keywords
-no Moose;
 
 1;
 
@@ -573,6 +573,8 @@ server.
 =item * L<Readonly>
 
 =item * L<URI>
+
+=item * L<namespace::clean> 0.04
 
 =back
 

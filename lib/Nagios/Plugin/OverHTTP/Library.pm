@@ -23,6 +23,9 @@ use Data::Validate::URI 0.05;
 # Import built-in types
 use MooseX::Types::Moose qw(Int Str);
 
+# Clean the imports are the end of scope
+use namespace::clean 0.04 -except => [qw(meta)];
+
 # Type definitions
 subtype Hostname,
 	as Str,
@@ -48,6 +51,8 @@ subtype URL,
 coerce Path,
 	from Str,
 		via { m{\A /}msx ? "$_" : "/$_" };
+
+no MooseX::Types;
 
 1;
 
@@ -102,6 +107,8 @@ This module is dependent on the following modules:
 =item * L<Data::Validate::URI> 0.05
 
 =item * L<MooseX::Types> 0.08
+
+=item * L<namespace::clean> 0.04
 
 =back
 

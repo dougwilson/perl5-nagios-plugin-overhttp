@@ -19,6 +19,7 @@ requires 'MooseX::Types'             => '0.08';
 requires 'Readonly'                  => 0;
 requires 'Scalar::Util'              => '1.19';
 requires 'URI'                       => 0;
+requires 'namespace::clean'          => '0.04';
 requires 'version'                   => '0.74';
 
 build_requires 'HTTP::Response'   => 0;
