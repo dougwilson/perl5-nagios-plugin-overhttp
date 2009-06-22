@@ -9,7 +9,7 @@ use warnings 'all';
 use Test::More;
 
 # Only authors test the Kwalitee (except for CPANTS, of course :)
-plan skip_all => 'Set TEST_AUTHOR to test the Kwalitee'
+plan skip_all => 'Set TEST_AUTHOR to enable this test'
 	unless $ENV{'TEST_AUTHOR'} || -e 'inc/.author';
 
 # Need Test::Kwalitee

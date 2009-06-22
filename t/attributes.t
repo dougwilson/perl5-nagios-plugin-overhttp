@@ -3,7 +3,7 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 23;
+use Test::More 0.82 tests => 23;
 
 use_ok('Nagios::Plugin::OverHTTP');
 

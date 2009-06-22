@@ -4,7 +4,7 @@ use strict;
 use warnings 'all';
 
 use HTTP::Response;
-use Test::More;
+use Test::More 0.82;
 use Test::MockObject;
 
 plan tests => 48;
