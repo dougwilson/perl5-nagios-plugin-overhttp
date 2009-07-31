@@ -43,7 +43,6 @@ requires:
   URI: 0
   namespace::clean: 0.04
   perl: 5.8.1
-  version: 0.74
 resources:
   homepage: http://github.com/dougwilson/perl5-nagios-plugin-overhttp/tree/master
   license: http://dev.perl.org/licenses/
