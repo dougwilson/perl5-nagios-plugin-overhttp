@@ -20,7 +20,7 @@ plan skip_all => 'Test::Perl::Critic required to criticize code'
 	if $@;
 
 Test::Perl::Critic->import(
-	'-profile' => File::Spec->catfile('t', 'author', 'perlcriticrc'),
+	'-profile' => File::Spec->catfile('xt', 'perlcriticrc'),
 );
 
 # Criticize code
