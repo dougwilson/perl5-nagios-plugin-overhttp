@@ -3,7 +3,7 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 14;
+use Test::More tests => 15;
 
 use_ok('Nagios::Plugin::OverHTTP');
 
@@ -35,15 +35,13 @@ use_ok('Nagios::Plugin::OverHTTP');
 	is($plugin->url, 'http://example.net/check_ok', 'url set with new');
 }
 
-TODO: {
-	local $TODO = q{Awaiting fix in https://rt.cpan.org/Ticket/Display.html?id=46200};
-
+{
 	my $plugin_opts = eval { Nagios::Plugin::OverHTTP->new_with_options({
 		url => 'http://example.net/check_ok',
 	}) };
 
 	ok(defined $plugin_opts, 'new_with_options using hashref succeeded');
-	#is($plugin_opts->url, 'http://example.net/check_ok', 'url set with new_with_options');
+	is($plugin_opts->url, 'http://example.net/check_ok', 'url set with new_with_options');
 }
 
 ########################

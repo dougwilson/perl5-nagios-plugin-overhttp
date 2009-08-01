@@ -35,7 +35,7 @@ requires:
   HTTP::Status: 5.817
   LWP::UserAgent: 0
   Moose: 0.74
-  MooseX::Getopt: 0.18
+  MooseX::Getopt: 0.19
   MooseX::StrictConstructor: 0.08
   MooseX::Types: 0.08
   Readonly: 0

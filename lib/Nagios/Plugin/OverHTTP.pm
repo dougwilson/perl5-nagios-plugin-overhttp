@@ -447,11 +447,9 @@ object.
 =head2 new_with_options
 
 This is identical to L</new>, except with the additional feature of reading the
-C<@ARGV> in the invoked scope (NOTE: a HASHREF cannot be provided as the
-constructing argument due to a bug in L<MooseX::Getopt>). C<@ARGV> will be
-parsed for command-line arguments. The command-line can contain any variable
-that L</new> can take. Arguments should be in the following format on the
-command line:
+C<@ARGV> in the invoked scope. C<@ARGV> will be parsed for command-line
+arguments. The command-line can contain any variable that L</new> can take.
+Arguments should be in the following format on the command line:
 
   --url=http://example.net/check_something
   --url http://example.net/check_something
@@ -565,7 +563,7 @@ server.
 
 =item * L<Moose> 0.74
 
-=item * L<MooseX::Getopt>
+=item * L<MooseX::Getopt> 0.19
 
 =item * L<MooseX::StrictConstructor> 0.08
 
@@ -582,9 +580,6 @@ server.
 Douglas Christopher Wilson, C<< <doug at somethingdoug.com> >>
 
 =head1 BUGS AND LIMITATIONS
-
-C<new_with_options> does not support a single HASHREF argument. Waiting on fix
-in L<https://rt.cpan.org/Ticket/Display.html?id=46200>.
 
 Please report any bugs or feature requests to
 C<bug-authen-cas-external at rt.cpan.org>, or through the web interface at
