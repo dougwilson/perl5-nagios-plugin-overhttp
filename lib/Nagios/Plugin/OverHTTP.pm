@@ -582,16 +582,16 @@ Douglas Christopher Wilson, C<< <doug at somethingdoug.com> >>
 =head1 BUGS AND LIMITATIONS
 
 Please report any bugs or feature requests to
-C<bug-authen-cas-external at rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Authen-CAS-External>. I will
-be notified, and then you'll automatically be notified of progress on your bug
-as I make changes.
+C<bug-nagios-plugin-overhttp at rt.cpan.org>, or through the web interface at
+L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Nagios-Plugin-OverHTTP>. I
+will be notified, and then you'll automatically be notified of progress on your
+bug as I make changes.
 
 =head1 SUPPORT
 
 You can find documentation for this module with the perldoc command.
 
-perldoc Authen::CAS::External
+perldoc Nagios::Plugin::OverHTTP
 
 
 You can also look for information at:
@@ -600,19 +600,19 @@ You can also look for information at:
 
 =item * RT: CPAN's request tracker
 
-L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Authen-CAS-External>
+L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Nagios-Plugin-OverHTTP>
 
 =item * AnnoCPAN: Annotated CPAN documentation
 
-L<http://annocpan.org/dist/Authen-CAS-External>
+L<http://annocpan.org/dist/Nagios-Plugin-OverHTTP>
 
 =item * CPAN Ratings
 
-L<http://cpanratings.perl.org/d/Authen-CAS-External>
+L<http://cpanratings.perl.org/d/Nagios-Plugin-OverHTTP>
 
 =item * Search CPAN
 
-L<http://search.cpan.org/dist/Authen-CAS-External/>
+L<http://search.cpan.org/dist/Nagios-Plugin-OverHTTP/>
 
 =back
 
