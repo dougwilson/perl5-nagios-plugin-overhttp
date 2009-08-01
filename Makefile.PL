@@ -25,6 +25,8 @@ build_requires 'HTTP::Response'   => 0;
 build_requires 'Test::MockObject' => 0;
 build_requires 'Test::More'       => '0.82';
 
+author_requires 'Test::CleanNamespaces' => 0;
+
 install_script 'bin/check_over_http';
 
 auto_provides;
