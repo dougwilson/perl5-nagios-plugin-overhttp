@@ -4,6 +4,10 @@ severity = 1
 [Documentation::RequirePodSections]
 lib_sections = NAME | VERSION | SYNOPSIS | DESCRIPTION | METHODS | DEPENDENCIES | BUGS AND LIMITATIONS | AUTHOR | LICENSE AND COPYRIGHT
 
+[InputOutput::RequireCheckedSyscalls]
+functions = :builtins
+exclude_functions = print
+
 [NamingConventions::Capitalization]
 package_exemptions = pack
 

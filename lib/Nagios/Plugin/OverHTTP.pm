@@ -175,6 +175,7 @@ sub check {
 	# Restore the previous timeout value to the useragent
 	$self->useragent->timeout($old_timeout);
 
+	## no critic (ControlStructures::ProhibitCascadingIfElse)
 	if ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message eq 'read timeout') {
 		# Failure due to timeout
 		my $timeout = $self->has_timeout ? $self->timeout : $self->useragent->timeout;
