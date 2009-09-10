@@ -1,6 +1,12 @@
 Revision history for Nagios-Plugin-OverHTTP
 
-0.09 Thu, Sep 10, 2009 18:12:43 -0500
+0.10 Thu, September 10, 2009 19:30:11 -0500
+  * Add new option autocorrect_unknown_html (and enabled it by default)
+    which will take a response that did not send a Nagios service status
+    and is a multi line HTML message find the <title> or first <h1>
+    element and add that as the first line of the message.
+
+0.09 Thu, September 10, 2009 18:12:43 -0500
   * Added new option default_status
   * Moved around and improved documentation
 

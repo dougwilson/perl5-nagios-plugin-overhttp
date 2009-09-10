@@ -6,7 +6,7 @@ use warnings 'all';
 
 # Module metadata
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 use Carp qw(croak);
 use HTTP::Status qw(:constants);
@@ -35,6 +35,15 @@ Readonly our $STATUS_CRITICAL => 2;
 Readonly our $STATUS_UNKNOWN  => 3;
 
 # Attributes
+
+has 'autocorrect_unknown_html' => (
+	is            => 'rw',
+	isa           => 'Bool',
+	documentation => q{When a multiline HTML response without a status is }
+	                .q{received, this will add something meaningful to the first line},
+
+	default       => 1,
+);
 
 has 'default_status' => (
 	is            => 'rw',
@@ -208,12 +217,8 @@ sub check {
 		return;
 	}
 
-	my %status_prefix_map = (
-		OK       => $STATUS_OK,
-		WARNING  => $STATUS_WARNING,
-		CRITICAL => $STATUS_CRITICAL,
-		UNKNOWN  => $STATUS_UNKNOWN,
-	);
+	# Get the message, which is the response content
+	my $message = $response->decoded_content;
 
 	# By default we do not know the status
 	my $status;
@@ -223,16 +228,46 @@ sub check {
 		# Get the status from the header if present
 		$status = to_Status($status_header);
 	}
-	elsif (my ($inc_status) = $response->decoded_content =~ m{\A([A-Z]+)}msx) {
+	elsif (my ($inc_status) = $message =~ m{\A([A-Z]+)}msx) {
 		$status = to_Status($inc_status);
 	}
 
 	if (!defined $status) {
 		# The status was not found in the response
 		$status = $self->default_status;
+
+		if ($self->autocorrect_unknown_html) {
+			# The setting is active to automatically correct unknown HTML
+			if ($message =~ m{\S+\s*[\r\n]+\s*\S+}msx) {
+				# This is a multi-line response.
+				if ($message =~ m{<(?:html|body|head)[^>]*>}imsx) {
+					# This looks like an HTML response. Most likely it is a
+					# response from the server that was intended for a user
+					# to see.
+
+					# This will be searching through the content to find
+					# something to use as the first line.
+
+					# See if a title or h1 can be found
+					my ($title) = $message =~ m{<title[^>]*>(.+?)</title>}imsx;
+					my ($h1   ) = $message =~ m{<h1   [^>]*>(.+?)</h1   >}imsx;
+
+					if (defined $title) {
+						# There was a title, so add it as the first line of the
+						# message
+						$message = sprintf "%s\n%s", $title, $message;
+					}
+					elsif (defined $h1) {
+						# There was a h1, so add it as the first line of the
+						# message
+						$message = sprintf "%s\n%s", $h1, $message;
+					}
+				}
+			}
+		}
 	}
 
-	$self->_set_state($status, $response->decoded_content);
+	$self->_set_state($status, $message);
 	return;
 }
 
@@ -380,7 +415,7 @@ Nagios::Plugin::OverHTTP - Nagios plugin to check over the HTTP protocol.
 
 =head1 VERSION
 
-Version 0.09
+Version 0.10
 
 =head1 SYNOPSIS
 
@@ -447,6 +482,16 @@ Arguments should be in the following format on the command line:
 
   # Get an attribute
   my $value = $object->attribute_name;
+
+=head2 autocorrect_unknown_html
+
+B<Added in version 0.10>; be sure to require this version for this feature.
+
+This is a Boolean of wether or not to attempt to add a meaningful first line to
+the message when the HTTP response did not include the Nagios plugin status
+and the message looks like HTML and has multiple lines. The title of the web
+page will be added to the first line, or the first H1 element will. The default
+for this is on.
 
 =head2 default_status
 

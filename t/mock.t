@@ -7,7 +7,7 @@ use HTTP::Response;
 use Test::More 0.82;
 use Test::MockObject;
 
-plan tests => 57;
+plan tests => 62;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -43,6 +43,9 @@ $fake_ua->mock('get', sub {
 	}
 	elsif ($url =~ m{_no_status\z}msx) {
 		$res = HTTP::Response->new(200, 'Some status', undef, 'I have no status');
+	}
+	elsif ($url =~ m{_no_status_html\z}msx) {
+		$res = HTTP::Response->new(200, 'Some status', undef, "<html>\n<title>I am title</title>\n</html>");
 	}
 	else {
 		$res = HTTP::Response->new(404, 'Not Found');
@@ -89,7 +92,8 @@ check_url($plugin, 'http://example.net/nagios/check_2_header' , $Nagios::Plugin:
 # NO STATUS TESTS
 check_url($plugin, 'http://example.net/nagios/check_no_status', $plugin->default_status,  qr//ms, 'no status');
 $plugin->default_status('critical');
-check_url($plugin, 'http://example.net/nagios/check_no_status', $Nagios::Plugin::OverHTTP::STATUS_CRITICAL,  qr//ms, 'no status critical');
+check_url($plugin, 'http://example.net/nagios/check_no_status'     , $Nagios::Plugin::OverHTTP::STATUS_CRITICAL,  qr//ms                     , 'no status critical');
+check_url($plugin, 'http://example.net/nagios/check_no_status_html', $Nagios::Plugin::OverHTTP::STATUS_CRITICAL,  qr/CRITICAL - I am title/ms, 'no status html fix');
 
 ##############################
 # TIMEOUT TESTS
