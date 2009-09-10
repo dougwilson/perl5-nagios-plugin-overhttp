@@ -38,7 +38,7 @@ subtype Path,
 	message { 'Must be a valid URL path' };
 
 subtype Status,
-	as Int,
+	as Str,
 	where { m{\A [0123] \z}msx },
 	message { 'Must be between 0 and 3 inclusive' };
 
