@@ -12,12 +12,14 @@ our $VERSION = '0.08';
 use MooseX::Types 0.08 -declare => [qw(
 	Hostname
 	Path
+	Status
 	Timeout
 	URL
 )];
 
 use Data::Validate::Domain 0.02;
 use Data::Validate::URI 0.05;
+use Nagios::Plugin::OverHTTP;
 
 # Import built-in types
 use MooseX::Types::Moose qw(Int Str);
@@ -36,6 +38,11 @@ subtype Path,
 	where { m{\A /}msx; },
 	message { 'Must be a valid URL path' };
 
+subtype Status,
+	as Int,
+	where { m{\A [0123] \z}msx },
+	message { 'Must be between 0 and 3 inclusive' };
+
 subtype Timeout,
 	as Int,
 	where { $_ > 0 && int($_) == $_ },
@@ -51,7 +58,30 @@ coerce Path,
 	from Str,
 		via { m{\A /}msx ? "$_" : "/$_" };
 
-no MooseX::Types;
+coerce Status,
+	from Str,
+		via { _status_from_str($_) };
+
+sub _status_from_str {
+	my ($status_string) = @_;
+
+	# First change the string to upper case
+	$status_string = uc $status_string;
+
+	my %status_prefix_map = (
+		OK       => $Nagios::Plugin::OverHTTP::STATUS_OK,
+		WARNING  => $Nagios::Plugin::OverHTTP::STATUS_WARNING,
+		CRITICAL => $Nagios::Plugin::OverHTTP::STATUS_CRITICAL,
+		UNKNOWN  => $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN,
+	);
+
+	if (!exists $status_prefix_map{$status_string}) {
+		return;
+	}
+
+	# Return the status number
+	return $status_prefix_map{$status_string};
+}
 
 1;
 
@@ -88,6 +118,8 @@ No methods.
 =item * Hostname
 
 =item * Path
+
+=item * Status
 
 =item * Timeout
 

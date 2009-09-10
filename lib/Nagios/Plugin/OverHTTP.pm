@@ -17,6 +17,7 @@ use MooseX::StrictConstructor 0.08;
 use Nagios::Plugin::OverHTTP::Library qw(
 	Hostname
 	Path
+	Status
 	Timeout
 	URL
 );
@@ -35,6 +36,15 @@ Readonly our $STATUS_CRITICAL => 2;
 Readonly our $STATUS_UNKNOWN  => 3;
 
 # Attributes
+
+has 'default_status' => (
+	is            => 'rw',
+	isa           => Status,
+	documentation => q{The default status if none specified in the response},
+
+	coerce        => 1,
+	default       => $STATUS_UNKNOWN,
+);
 
 has 'hostname' => (
 	is            => 'rw',
@@ -119,7 +129,7 @@ has 'timeout' => (
 
 has 'status' => (
 	is            => 'ro',
-	isa           => 'Int',
+	isa           => Status,
 
 	builder       => '_build_status',
 	clearer       => '_clear_status',
@@ -212,24 +222,15 @@ sub check {
 
 	if (defined $status_header) {
 		# Get the status from the header if present
-		if ($status_header =~ m{\A [0123] \z}msx) {
-			# The status header is the decimal status
-			$status = $status_header;
-		}
-		elsif (exists $status_prefix_map{$status_header}) {
-			# The status header is the word of the status
-			$status = $status_prefix_map{$status_header};
-		}
+		$status = to_Status($status_header);
 	}
 	elsif (my ($inc_status) = $response->decoded_content =~ m{\A([A-Z]+)}msx) {
-		if (exists $status_prefix_map{$inc_status}) {
-			$status = $status_prefix_map{$inc_status};
-		}
+		$status = to_Status($inc_status);
 	}
 
 	if (!defined $status) {
 		# The status was not found in the response
-		$status = $STATUS_UNKNOWN;
+		$status = $self->default_status;
 	}
 
 	$self->_set_state($status, $response->decoded_content);
@@ -411,39 +412,19 @@ constructor needs to be called to create an object to work with.
 
 This will construct a new plugin object.
 
-=head3 hostname
+=over
 
-This is the hostname of the remote server. This will automatically be populated
-if L</url> is set.
+=item B<< new(%attributes) >>
 
-=head3 path
+C<< %attributes >> is a HASH where the keys are attributes (specified in the
+L</ATTRIBUTES> section).
 
-This is the path to the remove Nagios plugin on the remote server. This will
-automatically be populated if L</url> is set.
+=item B<< new($attributes) >>
 
-=head3 ssl
+C<< $attributes >> is a HASHREF where the keys are attributes (specified in the
+L</ATTRIBUTES> section).
 
-This is a Boolean of whether or not to use SSL over HTTP (HTTPS). This defaults
-to false and will automatically be updated to true if a HTTPS URL is set to
-L</url>.
-
-=head3 timeout
-
-This is a positive integer for the timeout of the HTTP request. If set, this
-will override any timeout defined in the useragent for the duration of the
-request. The plugin will not permanently alter the timeout in the useragent.
-This defaults to not being set, and so the useragent's timeout is used.
-
-=head3 url
-
-This is the URL of the remote Nagios plugin to check. If not supplied, this will
-be constructed automatically from the L</hostname> and L</path> attributes.
-
-=head3 useragent
-
-This is the useragent to use when making requests. This defaults to
-L<LWP::Useragent> with no options. Currently this must be an L<LWP::Useragent>
-object.
+=back
 
 =head2 new_with_options
 
@@ -459,6 +440,58 @@ Arguments should be in the following format on the command line:
   # For bools, like SSL, you would use:
   --ssl    # Enable SSL
   --no-ssl # Disable SSL
+
+=head1 ATTRIBUTES
+
+  # Set an attribute
+  $object->attribute_name($new_value);
+
+  # Get an attribute
+  my $value = $object->attribute_name;
+
+=head2 default_status
+
+B<Added in version 0.09>; be sure to require this version for this feature.
+
+This is the default status that will be used if the remote plugin does not
+return a status. The default is "UNKNOWN." The status may be the status number,
+or a string with the name of the status, like:
+
+  $plugin->default_status('CRITICAL');
+
+=head2 hostname
+
+This is the hostname of the remote server. This will automatically be populated
+if L</url> is set.
+
+=head2 path
+
+This is the path to the remove Nagios plugin on the remote server. This will
+automatically be populated if L</url> is set.
+
+=head2 ssl
+
+This is a Boolean of whether or not to use SSL over HTTP (HTTPS). This defaults
+to false and will automatically be updated to true if a HTTPS URL is set to
+L</url>.
+
+=head2 timeout
+
+This is a positive integer for the timeout of the HTTP request. If set, this
+will override any timeout defined in the useragent for the duration of the
+request. The plugin will not permanently alter the timeout in the useragent.
+This defaults to not being set, and so the useragent's timeout is used.
+
+=head2 url
+
+This is the URL of the remote Nagios plugin to check. If not supplied, this will
+be constructed automatically from the L</hostname> and L</path> attributes.
+
+=head2 useragent
+
+This is the useragent to use when making requests. This defaults to
+L<LWP::Useragent> with no options. Currently this must be an L<LWP::Useragent>
+object.
 
 =head1 METHODS
 
@@ -524,11 +557,19 @@ The different possibilities for this is listed in L</NAGIOS STATUSES>
 
 =item 0 OK
 
+C<< $Nagios::Plugin::OverHTTP::STATUS_OK >>
+
 =item 1 WARNING
+
+C<< $Nagios::Plugin::OverHTTP::STATUS_WARNING >>
 
 =item 2 CRITICAL
 
+C<< $Nagios::Plugin::OverHTTP::STATUS_CRITICAL >>
+
 =item 3 UNKNOWN
+
+C<< $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN >>
 
 =back
 

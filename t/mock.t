@@ -7,13 +7,13 @@ use HTTP::Response;
 use Test::More 0.82;
 use Test::MockObject;
 
-plan tests => 48;
+plan tests => 57;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
 $fake_ua->set_isa('LWP::UserAgent');
 
-use_ok('Nagios::Plugin::OverHTTP');
+use Nagios::Plugin::OverHTTP;
 
 $fake_ua->mock('get', sub {
 	my ($self, $url) = @_;
@@ -40,6 +40,9 @@ $fake_ua->mock('get', sub {
 	elsif ($url eq 'check_ok_header') {
 		$res = HTTP::Response->new(200, 'OK', undef, 'OK - I am good');
 		$res->header('X-Nagios-Status' => 'WARNING');
+	}
+	elsif ($url =~ m{_no_status\z}msx) {
+		$res = HTTP::Response->new(200, 'Some status', undef, 'I have no status');
 	}
 	else {
 		$res = HTTP::Response->new(404, 'Not Found');
@@ -74,13 +77,19 @@ isnt($plugin->has_status, 1, 'Has no status yet');
 is($plugin->status, 3, 'Nonexistant plugin has UNKNOWN status');
 like($plugin->message, qr/\A UNKNOWN .+ Not \s Found/msx, 'Nonexistant plugin message');
 
-check_url($plugin, 'http://example.net/nagios/check_OK'       , 0, 'OK - I am something'      , 'OK');
-check_url($plugin, 'http://example.net/nagios/check_WARNING'  , 1, 'WARNING - I am something' , 'WARNING');
-check_url($plugin, 'http://example.net/nagios/check_CRITICAL' , 2, 'CRITICAL - I am something', 'CRITICAL');
-check_url($plugin, 'http://example.net/nagios/check_UNKNOWN'  , 3, 'UNKNOWN - I am something' , 'UNKNOWN');
-check_url($plugin, 'http://example.net/nagios/check_500'      , 2, qr/\ACRITICAL/msx          , '500');
-check_url($plugin, 'http://example.net/nagios/check_ok_header', 1, qr/\AWARNING - OK/ms       , 'Header override');
-check_url($plugin, 'http://example.net/nagios/check_2_header' , 2, qr//ms                     , 'Numberic header');
+check_url($plugin, 'http://example.net/nagios/check_OK'       , $Nagios::Plugin::OverHTTP::STATUS_OK      , 'OK - I am something'      , 'OK');
+check_url($plugin, 'http://example.net/nagios/check_WARNING'  , $Nagios::Plugin::OverHTTP::STATUS_WARNING , 'WARNING - I am something' , 'WARNING');
+check_url($plugin, 'http://example.net/nagios/check_CRITICAL' , $Nagios::Plugin::OverHTTP::STATUS_CRITICAL, 'CRITICAL - I am something', 'CRITICAL');
+check_url($plugin, 'http://example.net/nagios/check_UNKNOWN'  , $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN , 'UNKNOWN - I am something' , 'UNKNOWN');
+check_url($plugin, 'http://example.net/nagios/check_500'      , $Nagios::Plugin::OverHTTP::STATUS_CRITICAL, qr/\ACRITICAL/msx          , '500');
+check_url($plugin, 'http://example.net/nagios/check_ok_header', $Nagios::Plugin::OverHTTP::STATUS_WARNING , qr/\AWARNING - OK/ms       , 'Header override');
+check_url($plugin, 'http://example.net/nagios/check_2_header' , $Nagios::Plugin::OverHTTP::STATUS_CRITICAL, qr//ms                     , 'Numberic header');
+
+##############################
+# NO STATUS TESTS
+check_url($plugin, 'http://example.net/nagios/check_no_status', $plugin->default_status,  qr//ms, 'no status');
+$plugin->default_status('critical');
+check_url($plugin, 'http://example.net/nagios/check_no_status', $Nagios::Plugin::OverHTTP::STATUS_CRITICAL,  qr//ms, 'no status critical');
 
 ##############################
 # TIMEOUT TESTS

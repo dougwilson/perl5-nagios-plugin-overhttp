@@ -3,9 +3,9 @@
 use strict;
 use warnings 'all';
 
-use Test::More 0.82 tests => 23;
+use Test::More 0.82 tests => 28;
 
-use_ok('Nagios::Plugin::OverHTTP');
+use Nagios::Plugin::OverHTTP;
 
 # Create new plugin
 my $plugin = new_ok('Nagios::Plugin::OverHTTP');
@@ -26,6 +26,15 @@ is($plugin->url, 'http://server1/check_ok', 'URL updated');
 is($plugin->hostname, 'server1', 'hostname changed');
 is($plugin->path, '/check_ok', 'path still the same');
 isnt($plugin->ssl, 1, 'SSL still the same');
+
+# Test setting the default status
+is(eval{$plugin->default_status(1); $plugin->default_status}, 1);
+is(eval{$plugin->default_status(2); $plugin->default_status}, 2);
+eval{$plugin->default_status(6);};
+is($plugin->default_status, 2);
+is(eval{$plugin->default_status('OK'); $plugin->default_status}, $Nagios::Plugin::OverHTTP::STATUS_OK);
+is(eval{$plugin->default_status('unknown'); $plugin->default_status}, $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN);
+is(eval{$plugin->default_status($Nagios::Plugin::OverHTTP::STATUS_CRITICAL); $plugin->default_status}, $Nagios::Plugin::OverHTTP::STATUS_CRITICAL);
 
 # Change the SSL
 $plugin->ssl(1);
