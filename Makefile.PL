@@ -25,14 +25,17 @@ build_requires 'HTTP::Response'   => 0;
 build_requires 'Test::MockObject' => 0;
 build_requires 'Test::More'       => '0.82';
 
-author_requires 'File::Spec'            => 0;
-author_requires 'Pod::Coverage'         => '0.18';
-author_requires 'Test::CleanNamespaces' => 0;
-author_requires 'Test::DistManifest'    => 0;
-author_requires 'Test::MinimumVersion'  => '0.009';
-author_requires 'Test::Perl::Critic'    => 0;
-author_requires 'Test::Pod'             => '1.22';
-author_requires 'Test::Pod::Coverage'   => '1.08';
+author_requires 'File::Spec'              => 0;
+author_requires 'Pod::Coverage'           => '0.18';
+author_requires 'Test::CleanNamespaces'   => 0;
+author_requires 'Test::ConsistentVersion' => 0;
+author_requires 'Test::DistManifest'      => 0;
+author_requires 'Test::MinimumVersion'    => '0.009';
+author_requires 'Test::Perl::Critic'      => 0;
+author_requires 'Test::Pod'               => '1.22';
+author_requires 'Test::Pod::Content'      => 0;
+author_requires 'Test::Pod::Coverage'     => '1.08';
+author_requires 'Test::Requires'          => '0.02';
 
 install_script 'bin/check_over_http';
 

@@ -3,21 +3,26 @@
 
 use 5.008;
 use strict;
-use utf8;
 use warnings 'all';
 
 use Test::More;
+use Test::Requires 0.02;
 
 # Only authors test the Kwalitee (except for CPANTS, of course :)
-plan skip_all => 'Set TEST_AUTHOR to enable this test'
+plan skip_all => 'Set TEST_AUTHOR to test the Kwalitee'
 	unless $ENV{'TEST_AUTHOR'} || -e 'inc/.author';
 
-# Need Test::Kwalitee
-eval 'require Test::Kwalitee';
-plan skip_all => 'Test::Kwalitee required for testing the Kwalitee'
-	if $@;
+# Required modules for this test
+test_requires 'Test::Kwalitee';
 
 # The test is automatically done on the import
-# of the module
-Test::Kwalitee->import;
-
+# of the module. Test::Requires already imports
+# the module into our namespace. We want to make
+# sure this happens instead of relying on the
+# side effect of Test::Requires and make sure
+# we have a plan
+if (Test::Builder->new->current_test == 0) {
+	# No tests have been run, so assume we still need to import
+	# Test::Kwalitee
+	Test::Kwalitee->import;
+}

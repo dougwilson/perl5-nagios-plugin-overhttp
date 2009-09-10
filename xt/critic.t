@@ -2,22 +2,18 @@
 
 use 5.008;
 use strict;
-use utf8;
 use warnings 'all';
 
 use Test::More;
+use Test::Requires 0.02;
 
 # Only authors get to criticize code
 plan skip_all => 'Set TEST_AUTHOR to enable this test'
 	unless $ENV{'TEST_AUTHOR'} || -e 'inc/.author';
 
-eval 'use File::Spec';
-plan skip_all => 'File::Spec required to criticize code'
-	if $@;
-
-eval 'use Test::Perl::Critic';
-plan skip_all => 'Test::Perl::Critic required to criticize code'
-	if $@;
+# Required modules for this test
+test_requires 'File::Spec';
+test_requires 'Test::Perl::Critic';
 
 Test::Perl::Critic->import(
 	'-profile' => File::Spec->catfile('xt', 'perlcriticrc'),
