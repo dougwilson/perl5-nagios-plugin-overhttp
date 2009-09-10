@@ -1,44 +1,48 @@
 Revision history for Nagios-Plugin-OverHTTP
 
-0.08    Sat, June 13, 2009 21:05:13 -0500
-        [This release introduces no new functionality]
-        List LWP::UserAgent as dependency in documentation
-        Added what the defaults were to some of the usage
-        Corrected some spelling mistakes in the documentation 
-        Changed message to "Connection refused" if the TCP connection
-          cannot be established 
+0.09 Thu, Sep 10, 2009 18:12:43 -0500
+  * Added new option default_status
+  * Moved around and improved documentation
 
-0.07    Wed, May 20, 2009 19:10:43 -0500
-        Changed check_over_http to a default timeout of 10 seconds
-        Plugin dies if not enough information provided before a check
-        Added documentation for the HTTP respose format
-        Allow X-Nagios-Status to be digits
+0.08 Sat, June 13, 2009 21:05:13 -0500
+  * [This release introduces no new functionality]
+  * List LWP::UserAgent as dependency in documentation
+  * Added what the defaults were to some of the usage
+  * Corrected some spelling mistakes in the documentation 
+  * Changed message to "Connection refused" if the TCP connection
+    cannot be established 
+
+0.07 Wed, May 20, 2009 19:10:43 -0500
+  * Changed check_over_http to a default timeout of 10 seconds
+  * Plugin dies if not enough information provided before a check
+  * Added documentation for the HTTP respose format
+  * Allow X-Nagios-Status to be digits
 
 
-0.06    Mon, May 18, 2009 21:08:12 -0500
-        Added MANIFEST author test
-        Added documentation for the constructors
-        New option to the plugin:
-          --timeout
+0.06 Mon, May 18, 2009 21:08:12 -0500
+  * Added MANIFEST author test
+  * Added documentation for the constructors
+  * New option to the plugin:
+      --timeout
 
-0.05    Thu, May 14, 2009 11:07:11 -0500
-        MANIFEST was missing 2 files, and so was the distribution
-        Version 0.04 will never successfully install
+0.05 Thu, May 14, 2009 11:07:11 -0500
+  * MANIFEST was missing 2 files, and so was the distribution
+  * Version 0.04 will never successfully install
 
-0.04    Wed, May 13, 2009 23:06:12 -0500
-        Added new options to the plugin:
-          --hostname
-          --path
-          --ssl
-        Added parameter constraint checking
-        Removed unused Switch from code to make perl 5.11.0 happy
+0.04 Wed, May 13, 2009 23:06:12 -0500
+  * Added new options to the plugin:
+      --hostname
+      --path
+      --ssl
+  * Added parameter constraint checking
+  * Removed unused Switch from code to make perl 5.11.0 happy
 
-0.03    Tue, May 5, 2009 19:52:12 -0500
-        Fixed issue where version was not listed as a dependency
+0.03 Tue, May 5, 2009 19:52:12 -0500
+  * Fixed issue where version was not listed as a dependency
 
-0.02    Fri, May 1, 2009 12:30:21 -0500
-        Fixed issue where Readonly was not listed as a dependency
+0.02 Fri, May 1, 2009 12:30:21 -0500
+  * Fixed issue where Readonly was not listed as a dependency
 
-0.01    Thu, April 30, 2009 23:33:14 -0500
-        First version, released on an unsuspecting world.
+0.01 Thu, April 30, 2009 23:33:14 -0500
+  * First version, released on an unsuspecting world.
 

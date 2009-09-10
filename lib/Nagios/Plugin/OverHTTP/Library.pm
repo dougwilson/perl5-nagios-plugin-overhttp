@@ -7,7 +7,7 @@ use warnings 'all';
 
 # Module metadata
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use MooseX::Types 0.08 -declare => [qw(
 	Hostname
@@ -91,11 +91,12 @@ __END__
 
 =head1 NAME
 
-Nagios::Plugin::OverHTTP::Library - Types library
+Nagios::Plugin::OverHTTP::Library - Types library for
+L<Nagios::Plugin::OverHTTP>
 
 =head1 VERSION
 
-This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.08
+This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.09
 
 =head1 SYNOPSIS
 
@@ -113,19 +114,44 @@ No methods.
 
 =head1 TYPES PROVIDED
 
+=head2 Hostname
+
+This specifies a hostname. This is validated using the
+L<Data::Validate::Domain> library with the C<is_hostname> function.
+
+=head2 Path
+
+This specifies a valid URL path. Currently this is just a string that must
+begin with a forward slash. A coercion exists that will add a forward slash
+to the beginning of the string if there is not one.
+
+=head2 Status
+
+This specifies a valid Nagios service status code. The status code must be
+a valid number. This type also provides a coercion from a string. The string
+is not case-sensitive and may be one of the following values:
+
 =over 4
 
-=item * Hostname
+=item * OK
 
-=item * Path
+=item * WARNING
 
-=item * Status
+=item * CRITICAL
 
-=item * Timeout
-
-=item * URL
+=item * UNKNOWN
 
 =back
+
+=head2 Timeout
+
+This specifies a valid timeout value. A timeout value is an integer that is
+greater than zero.
+
+=head2 URL
+
+This specifies a URL. This is a string and is validated using the
+L<Data::Validate::URI> library with the C<is_uri> function.
 
 =head1 DEPENDENCIES
 
