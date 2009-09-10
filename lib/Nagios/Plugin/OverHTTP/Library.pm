@@ -2,7 +2,6 @@ package Nagios::Plugin::OverHTTP::Library;
 
 use 5.008001;
 use strict;
-use utf8;
 use warnings 'all';
 
 # Module metadata
@@ -86,8 +85,6 @@ sub _status_from_str {
 1;
 
 __END__
-
-=encoding utf8
 
 =head1 NAME
 

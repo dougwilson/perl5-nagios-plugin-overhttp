@@ -2,7 +2,6 @@ package Nagios::Plugin::OverHTTP;
 
 use 5.008001;
 use strict;
-use utf8;
 use warnings 'all';
 
 # Module metadata
