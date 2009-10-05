@@ -6,7 +6,7 @@ use warnings 'all';
 
 # Module metadata
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 use Carp qw(croak);
 use HTTP::Status qw(:constants);
@@ -415,7 +415,7 @@ Nagios::Plugin::OverHTTP - Nagios plugin to check over the HTTP protocol.
 
 =head1 VERSION
 
-Version 0.10
+Version 0.11
 
 =head1 SYNOPSIS
 

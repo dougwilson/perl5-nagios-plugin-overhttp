@@ -1,5 +1,12 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.11 Sun, October 4, 2009 20:47:12 -0500
+  * THIS RELEASE CONTAINS NO NEW FUNCTIONALITY
+  * The check_over_http plugin now no longer automatically installs,
+    see README for instructions for installing it.
+  * The check_over_http plugin how correctly works without flaws under
+    ePN and also adds a line to explicity enable ePN for the plugin.
+
 0.10 Thu, September 10, 2009 19:30:11 -0500
   * Add new option autocorrect_unknown_html (and enabled it by default)
     which will take a response that did not send a Nagios service status
