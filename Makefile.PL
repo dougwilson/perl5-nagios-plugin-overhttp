@@ -37,8 +37,6 @@ author_requires 'Test::Pod::Content'      => 0;
 author_requires 'Test::Pod::Coverage'     => '1.08';
 author_requires 'Test::Requires'          => '0.02';
 
-install_script 'bin/check_over_http';
-
 auto_provides;
 
 # Enable tests to be in multi-level directories
