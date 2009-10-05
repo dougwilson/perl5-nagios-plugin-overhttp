@@ -4,7 +4,7 @@ name     'Nagios-Plugin-OverHTTP';
 all_from 'lib/Nagios/Plugin/OverHTTP.pm';
 author   'Douglas Christopher Wilson <doug@somethingdoug.com>';
 license  'perl';
-resources homepage   => 'http://github.com/dougwilson/perl5-nagios-plugin-overhttp/tree/master';
+resources homepage   => 'http://github.com/dougwilson/perl5-nagios-plugin-overhttp/';
 resources repository => 'git://github.com/dougwilson/perl5-nagios-plugin-overhttp.git';
 
 requires 'Data::Validate::Domain'    => '0.02';
