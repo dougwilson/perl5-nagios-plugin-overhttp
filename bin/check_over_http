@@ -11,7 +11,7 @@ use 5.008001;
 use strict;
 use warnings 'all';
 
-use Nagios::Plugin::OverHTTP;
+use Nagios::Plugin::OverHTTP 0.06;
 
 # Script metadata
 our $AUTHORITY = 'cpan:DOUGDUDE';
