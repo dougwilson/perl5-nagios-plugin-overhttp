@@ -21,6 +21,7 @@ t/attributes.t
 t/commandline.t
 t/constructor.t
 t/mock.t
+t/timeout.t
 xt/clean-namespaces.t
 xt/consistent-version.t
 xt/critic.t

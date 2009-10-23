@@ -9,7 +9,7 @@ use HTTP::Status 5.817 qw(:constants);
 use Test::More 0.82;
 use Test::MockObject;
 
-plan tests => 67;
+plan tests => 61;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -164,19 +164,6 @@ foreach my $test_url (sort keys %test) {
 	# Check that it is the new default
 	check_url($plugin, 'http://example.net/nagios/no_status', $Nagios::Plugin::OverHTTP::STATUS_CRITICAL, qr//ms, 'No status successfully critical');
 }
-
-##############################
-# TIMEOUT TESTS
-isnt($plugin->has_timeout, 1, 'Has not timeout yet');
-$plugin->timeout(10);
-is($plugin->has_timeout, 1, 'Has timeout');
-is($plugin->timeout, 10, 'Timeout set');
-$plugin->url('http://example.net/nagios/check_time_15');
-is($plugin->status, 2, 'Timeout should be CRITICAL');
-$plugin->url('http://example.net/nagios/check_time_6');
-is($plugin->status, 0, 'Timeout did not occur');
-$plugin->clear_timeout;
-isnt($plugin->has_timeout, 1, 'Timeout cleared');
 
 exit 0;
 
