@@ -75,11 +75,8 @@ my %test = (
 $fake_ua->mock('get', sub {
 	my ($self, $url) = @_;
 
-	my $time_start = time;
-
 	# Change URL to everything after last /
 	($url) = $url =~ m{/ (\w+) \z}msx;
-	my $res;
 
 	if (exists $test{$url}) {
 		my $http_status = $test{$url}->{http_status} || HTTP_OK;
@@ -102,19 +99,9 @@ $fake_ua->mock('get', sub {
 
 		return $response;
 	}
-	elsif ($url =~ m{_time_(\d+)\z}msx) {
-		sleep $1;
-		$res = HTTP::Response->new(200, 'Some status', undef, 'OK - I am some result');
-	}
 	else {
-		$res = HTTP::Response->new(404, 'Not Found');
+		return HTTP::Response->new(404, 'Not Found');
 	}
-
-	if (time - $time_start > $self->timeout) {
-		$res = HTTP::Response->new(500, 'read timeout', undef, '500 read timeout');
-	}
-
-	return $res;
 });
 $fake_ua->mock('timeout', sub {
 	my ($self, $timeout) = @_;
