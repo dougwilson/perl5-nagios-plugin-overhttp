@@ -9,7 +9,7 @@ use HTTP::Status 5.817 qw(:constants);
 use Test::More 0.82;
 use Test::MockObject;
 
-plan tests => 81;
+plan tests => 86;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -55,14 +55,14 @@ my %test = (
 		body         => qr/OK - I am really a warning/,
 		status       => $Nagios::Plugin::OverHTTP::STATUS_WARNING,
 		http_body    => 'OK - I am really a warning',
-		http_headers => { 'X-Nagios-Status' => 'WARNING' },
+		http_headers => [ ['X-Nagios-Status' => 'WARNING'] ],
 	},
 	'header_status_numeric' => {
 		description  => 'Header status numeric',
 		body         => qr/OK - I am really a warning/,
 		status       => $Nagios::Plugin::OverHTTP::STATUS_WARNING,
 		http_body    => 'OK - I am really a warning',
-		http_headers => { 'X-Nagios-Status' => 1 },
+		http_headers => [ ['X-Nagios-Status' => 1] ],
 	},
 	'no_status_html_recover' => {
 		description => 'No status and strange HTML',
@@ -75,37 +75,48 @@ my %test = (
 		body_like    => qr/I am a header message/,
 		status       => $Nagios::Plugin::OverHTTP::STATUS_OK,
 		http_body    => 'I am junk, not a message :(',
-		http_headers => {
-			'X-Nagios-Information' => 'I am a header message',
-			'X-Nagios-Status'      => 'OK',
-		},
+		http_headers => [
+			['X-Nagios-Information' => 'I am a header message'],
+			['X-Nagios-Status'      => 'OK'                   ],
+		],
+	},
+	'header_message_multiline' => {
+		description  => 'Multiline message in header',
+		body         => "OK - I am a header message\nSecond line",
+		status       => $Nagios::Plugin::OverHTTP::STATUS_OK,
+		http_body    => 'I am junk, not a message :(',
+		http_headers => [
+			['X-Nagios-Information' => 'I am a header message'],
+			['X-Nagios-Information' => 'Second line'          ],
+			['X-Nagios-Status'      => 'OK'                   ],
+		],
 	},
 	'header_message_no_status' => {
-		description  => 'Message in header',
+		description  => 'Message in header without any status',
 		body_like    => qr/I am a header message/,
 		status       => $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN,
 		http_body    => 'I am junk, not a message :(',
-		http_headers => {
-			'X-Nagios-Information' => 'I am a header message',
-		},
+		http_headers => [
+			['X-Nagios-Information' => 'I am a header message'],
+		],
 	},
 	'header_message_ignore_body' => {
-		description  => 'Message in header',
+		description  => 'Message in header ignoring body',
 		body_like    => qr/I am a header message/,
 		status       => $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN,
 		http_body    => 'OK - I am junk, not a message :(',
-		http_headers => {
-			'X-Nagios-Information' => 'I am a header message',
-		},
+		http_headers => [
+			['X-Nagios-Information' => 'I am a header message'],
+		],
 	},
 	'header_message_no_status_word' => {
-		description  => 'Message in header',
+		description  => 'Message in header with status word ignored',
 		body_like    => qr/I am a header message/,
 		status       => $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN,
 		http_body    => 'I am junk, not a message :(',
-		http_headers => {
-			'X-Nagios-Information' => 'OK - I am a header message',
-		},
+		http_headers => [
+			['X-Nagios-Information' => 'OK - I am a header message'],
+		],
 	},
 );
 
@@ -128,9 +139,9 @@ $fake_ua->mock('get', sub {
 		);
 
 		if (exists $test{$url}->{http_headers}) {
-			foreach my $header (%{ $test{$url}->{http_headers} }) {
+			foreach my $header (@{ $test{$url}->{http_headers} }) {
 				# Set the header in the response
-				$response->header($header => $test{$url}->{http_headers}->{$header});
+				$response->headers->push_header(@{$header});
 			}
 		}
 
