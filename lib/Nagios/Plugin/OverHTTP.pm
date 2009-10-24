@@ -220,23 +220,40 @@ sub check {
 	# Get the message, which is the response content
 	my $message = $response->decoded_content;
 
+	# Get the message from the header
+	my $message_header;
+
+	if (defined $response->header('X-Nagios-Information')) {
+		$message_header = join qq{\n},
+			$response->header('X-Nagios-Information');
+	}
+
 	# By default we do not know the status
 	my $status;
 	my $status_header = $response->header('X-Nagios-Status');
 
-	if (defined $status_header) {
-		# Get the status from the header if present
+	if (defined $message_header) {
+		# Change the message to the message in the header
+		$message = $message_header;
+
+		# Set the status to the status in the header
 		$status = to_Status($status_header);
 	}
-	elsif (my ($inc_status) = $message =~ m{\A([A-Z]+)}msx) {
-		$status = to_Status($inc_status);
+	else {
+		if (defined $status_header) {
+			# Get the status from the header if present
+			$status = to_Status($status_header);
+		}
+		elsif (my ($inc_status) = $message =~ m{\A([A-Z]+)}msx) {
+			$status = to_Status($inc_status);
+		}
 	}
 
 	if (!defined $status) {
 		# The status was not found in the response
 		$status = $self->default_status;
 
-		if ($self->autocorrect_unknown_html) {
+		if ($self->autocorrect_unknown_html && !defined $message_header) {
 			# The setting is active to automatically correct unknown HTML
 			if ($message =~ m{\S+\s*[\r\n]+\s*\S+}msx) {
 				# This is a multi-line response.
@@ -267,7 +284,9 @@ sub check {
 		}
 	}
 
+	# Set the plugin state
 	$self->_set_state($status, $message);
+
 	return;
 }
 
@@ -574,8 +593,9 @@ will display the error code and the status message.
 
 =head2 HTTP BODY
 
-The body of the HTTP response will be the output of the plugin. To determine
-what the status code will be, the following methods are used:
+The body of the HTTP response will be the output of the plugin unless the
+header C<X-Nagios-Information> is present. To determine what the status code
+will be, the following methods are used:
 
 =over 4
 
@@ -594,6 +614,10 @@ of all capital letters is taken from the body and used to determine the result.
 The different possibilities for this is listed in L</NAGIOS STATUSES>
 
 =back
+
+Please note that if the header C<X-Nagios-Information> is present, then the
+status MUST be in the header C<X-Nagios-Status> as described above. The status
+will not be extracted from any text.
 
 =head2 NAGIOS STATUSES
 
