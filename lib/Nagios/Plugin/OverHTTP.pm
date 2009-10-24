@@ -689,6 +689,15 @@ server.
 
 Douglas Christopher Wilson, C<< <doug at somethingdoug.com> >>
 
+=head1 CONTRIBUTIONS
+
+=over
+
+=item * Alex Wollangk contributed the idea and code for the
+C<X-Nagios-Information> header.
+
+=back
+
 =head1 BUGS AND LIMITATIONS
 
 Please report any bugs or feature requests to
