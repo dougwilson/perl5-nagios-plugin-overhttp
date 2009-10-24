@@ -5,3 +5,4 @@
 \AMANIFEST\.(?:bak|SKIP)\z
 \Apm_to_blib\z
 \ADebian_CPANTS.txt\z
+\AREADME\.mkdn\z
