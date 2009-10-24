@@ -217,43 +217,18 @@ sub check {
 		return;
 	}
 
-	# Get the message, which is the response content
-	my $message = $response->decoded_content;
+	# Get the message from the response
+	my $message = $self->_extract_message_from_response($response);
 
-	# Get the message from the header
-	my $message_header;
-
-	if (defined $response->header('X-Nagios-Information')) {
-		$message_header = join qq{\n},
-			$response->header('X-Nagios-Information');
-	}
-
-	# By default we do not know the status
-	my $status;
-	my $status_header = $response->header('X-Nagios-Status');
-
-	if (defined $message_header) {
-		# Change the message to the message in the header
-		$message = $message_header;
-
-		# Set the status to the status in the header
-		$status = to_Status($status_header);
-	}
-	else {
-		if (defined $status_header) {
-			# Get the status from the header if present
-			$status = to_Status($status_header);
-		}
-		elsif (my ($inc_status) = $message =~ m{\A([A-Z]+)}msx) {
-			$status = to_Status($inc_status);
-		}
-	}
+	# Get the status from the response
+	my $status = $self->_extract_status_from_response($response);
 
 	if (!defined $status) {
 		# The status was not found in the response
 		$status = $self->default_status;
 
-		if ($self->autocorrect_unknown_html && !defined $message_header) {
+		if ($self->autocorrect_unknown_html
+			&& !defined $response->header('X-Nagios-Information')) {
 			# The setting is active to automatically correct unknown HTML
 			if ($message =~ m{\S+\s*[\r\n]+\s*\S+}msx) {
 				# This is a multi-line response.
@@ -375,6 +350,47 @@ sub _clear_state {
 
 	# Nothing useful to return, so chain
 	return $self;
+}
+
+sub _extract_message_from_response {
+	my ($self, $response) = @_;
+
+	my $message;
+
+	# First priority is the X-Nagios-Information header
+	if (defined $response->header('X-Nagios-Information')) {
+		# Set the message
+		$message = join qq{\n},
+			$response->header('X-Nagios-Information');
+	}
+	else {
+		# Otherwise the message is the body
+		$message = $response->decoded_content;
+	}
+
+	# Return the message
+	return $message;
+}
+
+sub _extract_status_from_response {
+	my ($self, $response) = @_;
+
+	# First priority is the X-Nagios-Status header
+	my $status = to_Status($response->header('X-Nagios-Status'));
+
+	if (!defined $status && !defined $response->header('X-Nagios-Information')) {
+		# Since X-Status-Information is not present, attempt to extract it
+		# from the body
+		my $message = $response->decoded_content;
+
+		if (my ($inc_status) = $message =~ m{\A ([A-Z]+)\b }msx) {
+			# Attempt to get the status from the first all-caps word
+			$status = to_Status($inc_status);
+		}
+	}
+
+	# Return the status
+	return $status;
 }
 
 sub _populate_from_url {
