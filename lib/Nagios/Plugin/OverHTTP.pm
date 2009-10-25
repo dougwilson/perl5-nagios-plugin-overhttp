@@ -4,15 +4,18 @@ use 5.008001;
 use strict;
 use warnings 'all';
 
-# Module metadata
+###########################################################################
+# METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION = '0.11';
+our $VERSION   = '0.11';
 
-use Carp qw(croak);
-use HTTP::Status 5.817 qw(:constants);
-use LWP::UserAgent;
+###########################################################################
+# MOOSE
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
+
+###########################################################################
+# MOOSE TYPES
 use Nagios::Plugin::OverHTTP::Library qw(
 	Hostname
 	Path
@@ -20,31 +23,41 @@ use Nagios::Plugin::OverHTTP::Library qw(
 	Timeout
 	URL
 );
+
+###########################################################################
+# MODULE IMPORTS
+use Carp qw(croak);
+use HTTP::Status 5.817 qw(:constants);
+use LWP::UserAgent;
 use Readonly 1.03;
 use URI;
 
-# Clean the imports are the end of scope
+###########################################################################
+# ALL IMPORTS BEFORE THIS WILL BE ERASED
 use namespace::clean 0.04 -except => [qw(meta)];
 
+###########################################################################
+# MOOSE ROLES
 with 'MooseX::Getopt';
 
-# Constants
+###########################################################################
+# PUBLIC CONSTANTS
 Readonly our $STATUS_OK       => 0;
 Readonly our $STATUS_WARNING  => 1;
 Readonly our $STATUS_CRITICAL => 2;
 Readonly our $STATUS_UNKNOWN  => 3;
 
-# Attributes
-
+###########################################################################
+# ATTRIBUTES
 has 'autocorrect_unknown_html' => (
 	is            => 'rw',
 	isa           => 'Bool',
 	documentation => q{When a multiline HTML response without a status is }
-	                .q{received, this will add something meaningful to the first line},
+	                .q{received, this will add something meaningful to the}
+	                .q{ first line},
 
 	default       => 1,
 );
-
 has 'default_status' => (
 	is            => 'rw',
 	isa           => Status,
@@ -53,7 +66,6 @@ has 'default_status' => (
 	coerce        => 1,
 	default       => $STATUS_UNKNOWN,
 );
-
 has 'hostname' => (
 	is            => 'rw',
 	isa           => Hostname,
@@ -73,7 +85,6 @@ has 'hostname' => (
 		$self->_clear_url;
 	},
 );
-
 has 'message' => (
 	is            => 'ro',
 	isa           => 'Str',
@@ -84,7 +95,6 @@ has 'message' => (
 	predicate     => 'has_message',
 	traits        => ['NoGetopt'],
 );
-
 has 'path' => (
 	is            => 'rw',
 	isa           => Path,
@@ -105,7 +115,6 @@ has 'path' => (
 		$self->_clear_url;
 	},
 );
-
 has 'ssl' => (
 	is            => 'rw',
 	isa           => 'Bool',
@@ -125,7 +134,6 @@ has 'ssl' => (
 		$self->_clear_url;
 	},
 );
-
 has 'timeout' => (
 	is            => 'rw',
 	isa           => Timeout,
@@ -134,7 +142,6 @@ has 'timeout' => (
 	clearer       => 'clear_timeout',
 	predicate     => 'has_timeout',
 );
-
 has 'status' => (
 	is            => 'ro',
 	isa           => Status,
@@ -145,7 +152,6 @@ has 'status' => (
 	predicate     => 'has_status',
 	traits        => ['NoGetopt'],
 );
-
 has 'url' => (
 	is            => 'rw',
 	isa           => URL,
@@ -165,7 +171,6 @@ has 'url' => (
 		$self->_populate_from_url;
 	},
 );
-
 has 'useragent' => (
 	is            => 'rw',
 	isa           => 'LWP::UserAgent',
@@ -175,6 +180,8 @@ has 'useragent' => (
 	traits        => ['NoGetopt'],
 );
 
+###########################################################################
+# METHODS
 sub check {
 	my ($self) = @_;
 
@@ -264,7 +271,6 @@ sub check {
 
 	return;
 }
-
 sub run {
 	my ($self) = @_;
 
@@ -275,6 +281,8 @@ sub run {
 	return $self->status;
 }
 
+###########################################################################
+# PRIVATE METHODS
 sub _build_hostname {
 	my ($self) = @_;
 
@@ -283,7 +291,6 @@ sub _build_hostname {
 
 	return $self->{hostname};
 }
-
 sub _build_message {
 	my ($self) = @_;
 
@@ -292,7 +299,6 @@ sub _build_message {
 
 	return $self->{message};
 }
-
 sub _build_path {
 	my ($self) = @_;
 
@@ -301,7 +307,6 @@ sub _build_path {
 
 	return $self->{path};
 }
-
 sub _build_ssl {
 	my ($self) = @_;
 
@@ -310,7 +315,6 @@ sub _build_ssl {
 
 	return $self->{ssl};
 }
-
 sub _build_status {
 	my ($self) = @_;
 
@@ -319,7 +323,6 @@ sub _build_status {
 
 	return $self->{status};
 }
-
 sub _build_url {
 	my ($self) = @_;
 
@@ -341,7 +344,6 @@ sub _build_url {
 	# Set the URL
 	return $url->as_string;
 }
-
 sub _clear_state {
 	my ($self) = @_;
 
@@ -351,7 +353,6 @@ sub _clear_state {
 	# Nothing useful to return, so chain
 	return $self;
 }
-
 sub _extract_message_from_response {
 	my ($self, $response) = @_;
 
@@ -371,7 +372,6 @@ sub _extract_message_from_response {
 	# Return the message
 	return $message;
 }
-
 sub _extract_status_from_response {
 	my ($self, $response) = @_;
 
@@ -392,7 +392,6 @@ sub _extract_status_from_response {
 	# Return the status
 	return $status;
 }
-
 sub _populate_from_url {
 	my ($self) = @_;
 
@@ -415,7 +414,6 @@ sub _populate_from_url {
 	# Nothing useful to return, so chain
 	return $self;
 }
-
 sub _set_state {
 	my ($self, $status, $message) = @_;
 
@@ -437,7 +435,8 @@ sub _set_state {
 	return $self;
 }
 
-# Make immutable
+###########################################################################
+# MAKE MOOSE OBJECT IMMUTABLE
 __PACKAGE__->meta->make_immutable;
 
 1;

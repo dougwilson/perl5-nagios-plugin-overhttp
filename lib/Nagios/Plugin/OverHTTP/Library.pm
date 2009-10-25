@@ -4,10 +4,13 @@ use 5.008001;
 use strict;
 use warnings 'all';
 
-# Module metadata
+###########################################################################
+# METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION = '0.11';
+our $VERSION   = '0.11';
 
+###########################################################################
+# MOOSE
 use MooseX::Types 0.08 -declare => [qw(
 	Hostname
 	Path
@@ -16,17 +19,22 @@ use MooseX::Types 0.08 -declare => [qw(
 	URL
 )];
 
+###########################################################################
+# MOOSE TYPES
+use MooseX::Types::Moose qw(Int Str);
+
+###########################################################################
+# MODULE IMPORTS
 use Data::Validate::Domain 0.02;
 use Data::Validate::URI 0.05;
 use Nagios::Plugin::OverHTTP;
 
-# Import built-in types
-use MooseX::Types::Moose qw(Int Str);
-
-# Clean the imports are the end of scope
+###########################################################################
+# ALL IMPORTS BEFORE THIS WILL BE ERASED
 use namespace::clean 0.04 -except => [qw(meta)];
 
-# Type definitions
+###########################################################################
+# TYPES DEFINITIONS
 subtype Hostname,
 	as Str,
 	where { Data::Validate::Domain::is_hostname($_) },
@@ -61,6 +69,8 @@ coerce Status,
 	from Str,
 		via { _status_from_str($_) };
 
+###########################################################################
+# PRIVATE FUNCTIONS
 sub _status_from_str {
 	my ($status_string) = @_;
 
