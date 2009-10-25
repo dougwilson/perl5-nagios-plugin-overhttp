@@ -66,7 +66,7 @@ my %test = (
 	},
 	'no_status_html_recover' => {
 		description => 'No status and strange HTML',
-		body_like   => qr/I am title$/m,
+		body_like   => qr/UNKNOWN - I am title/,
 		status      => $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN,
 		http_body   => "<html>\n<title>I am title</title>\n</html>",
 	},
