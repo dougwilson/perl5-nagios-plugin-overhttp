@@ -15,7 +15,7 @@ use Nagios::Plugin::OverHTTP 0.06;
 
 # Script metadata
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.11';
+our $VERSION   = '0.13';
 
 # Clean the @ARGV that ePN may mess up
 if (__PACKAGE__ =~ m{\A Embed::}msx) {

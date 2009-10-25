@@ -24,10 +24,10 @@ no_index:
 provides:
   Nagios::Plugin::OverHTTP:
     file: lib/Nagios/Plugin/OverHTTP.pm
-    version: 0.12
+    version: 0.13
   Nagios::Plugin::OverHTTP::Library:
     file: lib/Nagios/Plugin/OverHTTP/Library.pm
-    version: 0.12
+    version: 0.13
 requires:
   Data::Validate::Domain: 0.02
   Data::Validate::URI: 0.05
@@ -48,4 +48,4 @@ resources:
   homepage: http://github.com/dougwilson/perl5-nagios-plugin-overhttp/
   license: http://dev.perl.org/licenses/
   repository: git://github.com/dougwilson/perl5-nagios-plugin-overhttp.git
-version: 0.12
+version: 0.13

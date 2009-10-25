@@ -1,5 +1,9 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.13 Sun, October 24, 2009 18:32:42 -0500
+  * Fixed a regular expression in t/mock.t to work with buggy perl
+    5.8.8 and lower.
+
 0.12 Sat, October 24, 2009 23:34:11 -0500
   * New option "verb" which sepcifies the HTTP verb to use when making
     the HTTP request.
