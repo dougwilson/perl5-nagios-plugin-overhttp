@@ -758,5 +758,15 @@ L<http://search.cpan.org/dist/Nagios-Plugin-OverHTTP/>
 
 Copyright 2009 Douglas Christopher Wilson, all rights reserved.
 
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
+This program is free software; you can redistribute it and/or
+modify it under the terms of either:
+
+=over
+
+=item * the GNU General Public License as published by the Free
+Software Foundation; either version 1, or (at your option) any
+later version, or
+
+=item * the Artistic License version 2.0.
+
+=back
