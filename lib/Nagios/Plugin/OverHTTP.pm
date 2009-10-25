@@ -704,7 +704,7 @@ server.
 
 Douglas Christopher Wilson, C<< <doug at somethingdoug.com> >>
 
-=head1 CONTRIBUTIONS
+=head1 ACKNOWLEDGEMENTS
 
 =over
 
@@ -749,10 +749,6 @@ L<http://cpanratings.perl.org/d/Nagios-Plugin-OverHTTP>
 L<http://search.cpan.org/dist/Nagios-Plugin-OverHTTP/>
 
 =back
-
-
-=head1 ACKNOWLEDGEMENTS
-
 
 =head1 LICENSE AND COPYRIGHT
 
