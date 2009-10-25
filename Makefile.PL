@@ -10,6 +10,7 @@ resources repository => 'git://github.com/dougwilson/perl5-nagios-plugin-overhtt
 requires 'Data::Validate::Domain'    => '0.02';
 requires 'Data::Validate::URI'       => '0.05';
 requires 'Getopt::Long::Descriptive' => 0;
+requires 'HTTP::Request'             => '5.827';
 requires 'HTTP::Status'              => '5.817';
 requires 'LWP::UserAgent'            => 0;
 requires 'Moose'                     => '0.74';

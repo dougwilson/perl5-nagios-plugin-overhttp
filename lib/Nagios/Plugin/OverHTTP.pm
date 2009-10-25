@@ -699,6 +699,8 @@ server.
 
 =item * L<Carp>
 
+=item * L<HTTP::Request> 5.827
+
 =item * L<HTTP::Status> 5.817
 
 =item * L<LWP::UserAgent>
