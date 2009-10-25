@@ -725,8 +725,7 @@ bug as I make changes.
 
 You can find documentation for this module with the perldoc command.
 
-perldoc Nagios::Plugin::OverHTTP
-
+  perldoc Nagios::Plugin::OverHTTP
 
 You can also look for information at:
 
