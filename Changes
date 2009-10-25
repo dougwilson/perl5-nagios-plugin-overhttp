@@ -1,5 +1,13 @@
 Revision history for Nagios-Plugin-OverHTTP
 
+0.12 Sat, October 24, 2009 23:34:11 -0500
+  * New option "verb" which sepcifies the HTTP verb to use when making
+    the HTTP request.
+  * New header supported: X-Nagios-Information which replaces using
+    the body for the plugin output (message). Please refer to the
+    documentation in Nagios::Plugin::OverHTTP about this header.
+    Code and idea contributed by Alex Wollangk.
+
 0.11 Sun, October 4, 2009 20:47:12 -0500
   * THIS RELEASE CONTAINS NO NEW FUNCTIONALITY
   * The check_over_http plugin now no longer automatically installs,

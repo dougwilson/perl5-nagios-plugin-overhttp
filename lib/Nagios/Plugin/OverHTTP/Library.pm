@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.11';
+our $VERSION   = '0.12';
 
 ###########################################################################
 # MOOSE
@@ -107,7 +107,7 @@ L<Nagios::Plugin::OverHTTP>
 
 =head1 VERSION
 
-This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.11
+This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.12
 
 =head1 SYNOPSIS
 
@@ -131,6 +131,8 @@ This specifies a hostname. This is validated using the
 L<Data::Validate::Domain> library with the C<is_hostname> function.
 
 =head2 HTTPVerb
+
+B<Added in version 0.12>; be sure to require this version for this feature.
 
 This specifies a HTTP verb. THis must be in all capital letters and all verbs
 are valid.

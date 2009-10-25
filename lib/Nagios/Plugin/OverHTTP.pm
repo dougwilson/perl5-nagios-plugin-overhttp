@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.11';
+our $VERSION   = '0.12';
 
 ###########################################################################
 # MOOSE
@@ -16,7 +16,7 @@ use MooseX::StrictConstructor 0.08;
 
 ###########################################################################
 # MOOSE TYPES
-use Nagios::Plugin::OverHTTP::Library qw(
+use Nagios::Plugin::OverHTTP::Library 0.12 qw(
 	Hostname
 	HTTPVerb
 	Path
@@ -461,7 +461,7 @@ Nagios::Plugin::OverHTTP - Nagios plugin to check over the HTTP protocol.
 
 =head1 VERSION
 
-Version 0.11
+Version 0.12
 
 =head1 SYNOPSIS
 
@@ -585,6 +585,8 @@ object.
 
 =head2 verb
 
+B<Added in version 0.12>; be sure to require this version for this feature.
+
 This is the HTTP verb that will be used to make the HTTP request. The default
 value is C<GET>.
 
@@ -649,7 +651,8 @@ The different possibilities for this is listed in L</NAGIOS STATUSES>
 
 Please note that if the header C<X-Nagios-Information> is present, then the
 status MUST be in the header C<X-Nagios-Status> as described above. The status
-will not be extracted from any text.
+will not be extracted from any text. The C<X-Nagios-Information> header support
+was added in version 0.12.
 
 =head2 NAGIOS STATUSES
 
