@@ -18,6 +18,7 @@ use MooseX::StrictConstructor 0.08;
 # MOOSE TYPES
 use Nagios::Plugin::OverHTTP::Library qw(
 	Hostname
+	HTTPVerb
 	Path
 	Status
 	Timeout
@@ -27,6 +28,7 @@ use Nagios::Plugin::OverHTTP::Library qw(
 ###########################################################################
 # MODULE IMPORTS
 use Carp qw(croak);
+use HTTP::Request 5.827;
 use HTTP::Status 5.817 qw(:constants);
 use LWP::UserAgent;
 use Readonly 1.03;
@@ -179,6 +181,13 @@ has 'useragent' => (
 	lazy          => 1,
 	traits        => ['NoGetopt'],
 );
+has 'verb' => (
+	is            => 'rw',
+	isa           => HTTPVerb,
+	documentation => q{Specifies the HTTP verb with which to make the request},
+
+	default       => 'GET',
+);
 
 ###########################################################################
 # METHODS
@@ -194,8 +203,11 @@ sub check {
 		$self->useragent->timeout($self->timeout);
 	}
 
+	# Form the HTTP request
+	my $request = HTTP::Request->new($self->verb, $self->url);
+
 	# Get the response of the plugin
-	my $response = $self->useragent->get($self->url);
+	my $response = $self->useragent->request($request);
 
 	# Restore the previous timeout value to the useragent
 	$self->useragent->timeout($old_timeout);
@@ -570,6 +582,11 @@ be constructed automatically from the L</hostname> and L</path> attributes.
 This is the useragent to use when making requests. This defaults to
 L<LWP::Useragent> with no options. Currently this must be an L<LWP::Useragent>
 object.
+
+=head2 verb
+
+This is the HTTP verb that will be used to make the HTTP request. The default
+value is C<GET>.
 
 =head1 METHODS
 

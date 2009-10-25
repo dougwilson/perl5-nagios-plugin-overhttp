@@ -9,7 +9,7 @@ use HTTP::Status 5.817 qw(:constants);
 use Test::More 0.82;
 use Test::MockObject;
 
-plan tests => 86;
+plan tests => 96;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -118,17 +118,34 @@ my %test = (
 			['X-Nagios-Information' => 'OK - I am a header message'],
 		],
 	},
+	'GET_only_for_get' => {
+		description => 'Page only exists for GET',
+		body        => 'OK - I am GET',
+		status      => $Nagios::Plugin::OverHTTP::STATUS_OK,
+	},
+	'HEAD_only_for_head' => {
+		description => 'Page only exists for HEAD',
+		body_like   => qr/I am HEAD/,
+		status      => $Nagios::Plugin::OverHTTP::STATUS_OK,
+		http_headers => [
+			['X-Nagios-Information' => 'I am HEAD'],
+			['X-Nagios-Status'      => 'OK'       ],
+		],
+	},
 );
 
-$fake_ua->mock('get', sub {
-	my ($self, $url) = @_;
+$fake_ua->mock('request', sub {
+	my ($self, $request) = @_;
 
 	# Change URL to everything after last /
-	($url) = $url =~ m{/ (\w+) \z}msx;
+	my ($url) = $request->uri =~ m{/ (\w+) \z}msx;
 
-	if (exists $test{$url}) {
-		my $http_status = $test{$url}->{http_status} || HTTP_OK;
-		my $http_body   = $test{$url}->{http_body  } || $test{$url}->{body};
+	# Get the test
+	my $test = $test{sprintf('%s_%s', $request->method, $url)} || $test{$url};
+
+	if (defined $test) {
+		my $http_status = $test->{http_status} || HTTP_OK;
+		my $http_body   = $test->{http_body  } || $test->{body};
 
 		# Construct a response
 		my $response = HTTP::Response->new(
@@ -138,8 +155,8 @@ $fake_ua->mock('get', sub {
 			$http_body,
 		);
 
-		if (exists $test{$url}->{http_headers}) {
-			foreach my $header (@{ $test{$url}->{http_headers} }) {
+		if (exists $test->{http_headers}) {
+			foreach my $header (@{ $test->{http_headers} }) {
 				# Set the header in the response
 				$response->headers->push_header(@{$header});
 			}

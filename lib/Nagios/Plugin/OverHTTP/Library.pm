@@ -13,6 +13,7 @@ our $VERSION   = '0.11';
 # MOOSE
 use MooseX::Types 0.08 -declare => [qw(
 	Hostname
+	HTTPVerb
 	Path
 	Status
 	Timeout
@@ -39,6 +40,9 @@ subtype Hostname,
 	as Str,
 	where { Data::Validate::Domain::is_hostname($_) },
 	message { 'Must be a valid hostname' };
+
+enum HTTPVerb,
+	qw(DELETE GET HEAD OPTIONS POST PUT TRACE);
 
 subtype Path,
 	as Str,
@@ -125,6 +129,11 @@ No methods.
 
 This specifies a hostname. This is validated using the
 L<Data::Validate::Domain> library with the C<is_hostname> function.
+
+=head2 HTTPVerb
+
+This specifies a HTTP verb. THis must be in all capital letters and all verbs
+are valid.
 
 =head2 Path
 

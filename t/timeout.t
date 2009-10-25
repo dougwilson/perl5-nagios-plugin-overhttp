@@ -17,13 +17,13 @@ $fake_ua->set_isa('LWP::UserAgent');
 
 use Nagios::Plugin::OverHTTP;
 
-$fake_ua->mock('get', sub {
-	my ($self, $url) = @_;
+$fake_ua->mock('request', sub {
+	my ($self, $request) = @_;
 
 	my $time_start = time;
 
 	# Change URL to everything after last /
-	($url) = $url =~ m{/ (\w+) \z}msx;
+	my ($url) = $request->uri =~ m{/ (\w+) \z}msx;
 	my $res;
 
 	if ($url =~ m{_time_(\d+)\z}msx) {
