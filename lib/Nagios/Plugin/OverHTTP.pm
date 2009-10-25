@@ -9,7 +9,7 @@ our $AUTHORITY = 'cpan:DOUGDUDE';
 our $VERSION = '0.11';
 
 use Carp qw(croak);
-use HTTP::Status qw(:constants);
+use HTTP::Status 5.817 qw(:constants);
 use LWP::UserAgent;
 use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
@@ -20,7 +20,7 @@ use Nagios::Plugin::OverHTTP::Library qw(
 	Timeout
 	URL
 );
-use Readonly;
+use Readonly 1.03;
 use URI;
 
 # Clean the imports are the end of scope
@@ -683,7 +683,7 @@ server.
 
 =item * L<Carp>
 
-=item * L<HTTP::Status>
+=item * L<HTTP::Status> 5.817
 
 =item * L<LWP::UserAgent>
 
@@ -693,7 +693,7 @@ server.
 
 =item * L<MooseX::StrictConstructor> 0.08
 
-=item * L<Readonly>
+=item * L<Readonly> 1.03
 
 =item * L<URI>
 
