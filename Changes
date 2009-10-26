@@ -1,73 +1,86 @@
 Revision history for Nagios-Plugin-OverHTTP
+===========================================
 
 0.13 Sun, October 24, 2009 18:32:42 -0500
-  * Fixed a regular expression in t/mock.t to work with buggy perl
+-----------------------------------------
+  * Fixed a regular expression in `t/mock.t` to work with buggy `perl`
     5.8.8 and lower.
 
 0.12 Sat, October 24, 2009 23:34:11 -0500
-  * New option "verb" which sepcifies the HTTP verb to use when making
+-----------------------------------------
+  * New option `verb` which sepcifies the HTTP verb to use when making
     the HTTP request.
-  * New header supported: X-Nagios-Information which replaces using
+  * New header supported: `X-Nagios-Information` which replaces using
     the body for the plugin output (message). Please refer to the
-    documentation in Nagios::Plugin::OverHTTP about this header.
+    documentation in `Nagios::Plugin::OverHTTP` about this header.
     Code and idea contributed by Alex Wollangk.
 
 0.11 Sun, October 4, 2009 20:47:12 -0500
-  * THIS RELEASE CONTAINS NO NEW FUNCTIONALITY
-  * The check_over_http plugin now no longer automatically installs,
-    see README for instructions for installing it.
-  * The check_over_http plugin how correctly works without flaws under
+-----------------------------------------
+  * __THIS RELEASE CONTAINS NO NEW FUNCTIONALITY__
+  * The `check_over_http` plugin now no longer automatically installs,
+    see `README` for instructions for installing it.
+  * The `check_over_http plugin` how correctly works without flaws under
     ePN and also adds a line to explicity enable ePN for the plugin.
 
 0.10 Thu, September 10, 2009 19:30:11 -0500
-  * Add new option autocorrect_unknown_html (and enabled it by default)
+-------------------------------------------
+  * Add new option `autocorrect_unknown_html` (and enabled it by default)
     which will take a response that did not send a Nagios service status
-    and is a multi line HTML message find the <title> or first <h1>
+    and is a multi line HTML message find the `<title>` or first `<h1>`
     element and add that as the first line of the message.
 
 0.09 Thu, September 10, 2009 18:12:43 -0500
+-------------------------------------------
   * Added new option default_status
   * Moved around and improved documentation
 
 0.08 Sat, June 13, 2009 21:05:13 -0500
-  * [This release introduces no new functionality]
-  * List LWP::UserAgent as dependency in documentation
+--------------------------------------
+  * __THIS RELEASE CONTAINS NO NEW FUNCTIONALITY__
+  * List `LWP::UserAgent` as dependency in documentation
   * Added what the defaults were to some of the usage
   * Corrected some spelling mistakes in the documentation 
   * Changed message to "Connection refused" if the TCP connection
-    cannot be established 
+    cannot be established
 
 0.07 Wed, May 20, 2009 19:10:43 -0500
-  * Changed check_over_http to a default timeout of 10 seconds
+-------------------------------------
+  * Changed `check_over_http` to a default timeout of 10 seconds
   * Plugin dies if not enough information provided before a check
-  * Added documentation for the HTTP respose format
-  * Allow X-Nagios-Status to be digits
+  * Added documentation for the HTTP response format
+  * Allow `X-Nagios-Status` to be digits
 
 
 0.06 Mon, May 18, 2009 21:08:12 -0500
-  * Added MANIFEST author test
+-------------------------------------
+  * Added `MANIFEST` author test
   * Added documentation for the constructors
   * New option to the plugin:
-      --timeout
+    * `--timeout`
 
 0.05 Thu, May 14, 2009 11:07:11 -0500
-  * MANIFEST was missing 2 files, and so was the distribution
+-------------------------------------
+  * `MANIFEST` was missing 2 files, and so was the distribution
   * Version 0.04 will never successfully install
 
 0.04 Wed, May 13, 2009 23:06:12 -0500
+-------------------------------------
   * Added new options to the plugin:
-      --hostname
-      --path
-      --ssl
+    * `--hostname`
+    * `--path`
+    * `--ssl`
   * Added parameter constraint checking
-  * Removed unused Switch from code to make perl 5.11.0 happy
+  * Removed unused `Switch` from code to make `perl` 5.11.0 happy
 
 0.03 Tue, May 5, 2009 19:52:12 -0500
-  * Fixed issue where version was not listed as a dependency
+------------------------------------
+  * Fixed issue where `version` was not listed as a dependency
 
 0.02 Fri, May 1, 2009 12:30:21 -0500
-  * Fixed issue where Readonly was not listed as a dependency
+------------------------------------
+  * Fixed issue where `Readonly` was not listed as a dependency
 
 0.01 Thu, April 30, 2009 23:33:14 -0500
+---------------------------------------
   * First version, released on an unsuspecting world.
-
