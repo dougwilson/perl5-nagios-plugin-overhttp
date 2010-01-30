@@ -690,7 +690,7 @@ server.
   
   my $status = $? > 0 ? $? >> 8 : 3;
   
-  printf "X-Nagios-Header: %d\n", $status;
+  printf "X-Nagios-Status: %d\n", $status;
   print  "Content-Type: text/plain\n\n";
   print  $output if $output;
   
