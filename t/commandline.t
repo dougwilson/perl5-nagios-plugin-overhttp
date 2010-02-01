@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 
 use strict;
 use warnings 'all';
@@ -10,11 +10,15 @@ use Nagios::Plugin::OverHTTP;
 SKIP: {
 	local @ARGV = '--help';
 
+	my $skip = 1;
 	# Create new plugin with no arguments which means it will read from
 	# command line
 	eval {
+		local *{'CORE::GLOBAL::exit'} = sub { $skip = 1; };
 		Nagios::Plugin::OverHTTP->new_with_options;
 	};
+
+	skip 'Usage failed out', 9, if $skip;
 
 	my $err = $@;
 
