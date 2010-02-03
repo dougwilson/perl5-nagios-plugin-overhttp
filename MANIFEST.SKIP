@@ -5,4 +5,5 @@
 \AMANIFEST\.(?:bak|SKIP)\z
 \Apm_to_blib\z
 \ADebian_CPANTS.txt\z
-\.mkdn\z
+\.mkdn\z    # All Markdown files (because they are for Github)
+\Acover_db/ # The Devel::Cover database

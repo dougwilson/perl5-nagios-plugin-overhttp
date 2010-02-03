@@ -1,4 +1,5 @@
 blib/
+cover_db/
 Debian_CPANTS.txt
 Makefile
 Makefile.old
