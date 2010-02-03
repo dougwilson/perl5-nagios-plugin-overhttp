@@ -24,6 +24,7 @@ requires
 	'MooseX::Getopt'            => '0.19',
 	'MooseX::StrictConstructor' => '0.08',
 	'MooseX::Types'             => '0.08',
+	'MooseX::Types::Moose'      => 0,
 	'Readonly'                  => '1.03',
 	'Scalar::Util'              => '1.19',
 	'URI'                       => 0,
@@ -32,6 +33,7 @@ requires
 # Modules that are required for tests in t/
 test_requires
 	'HTTP::Response'   => 0,
+	'HTTP::Status'     => '5.817',
 	'Test::MockObject' => 0,
 	'Test::More'       => '0.82';
 
