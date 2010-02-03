@@ -60,6 +60,14 @@ has 'autocorrect_unknown_html' => (
 
 	default       => 1,
 );
+has 'critical' => (
+	is            => 'rw',
+	isa           => 'HashRef[Str]',
+	documentation => q{Specifies performance levels that result in a }
+	                .q{critical status},
+
+	default       => sub { {} },
+);
 has 'default_status' => (
 	is            => 'rw',
 	isa           => Status,
@@ -187,6 +195,14 @@ has 'verb' => (
 	documentation => q{Specifies the HTTP verb with which to make the request},
 
 	default       => 'GET',
+);
+has 'warning' => (
+	is            => 'rw',
+	isa           => 'HashRef[Str]',
+	documentation => q{Specifies performance levels that result in a }
+	                .q{warning status},
+
+	default       => sub { {} },
 );
 
 ###########################################################################
@@ -539,6 +555,14 @@ and the message looks like HTML and has multiple lines. The title of the web
 page will be added to the first line, or the first H1 element will. The default
 for this is on.
 
+=head2 critical
+
+B<Added in version 0.14>; be sure to require this version for this feature.
+
+This is a hash reference specifying different performance names (as the hash
+keys) and what threshold they need to be to result in a critical status. The
+format for the threshold is specified in L</PERFORMANCE THRESHOLD>.
+
 =head2 default_status
 
 B<Added in version 0.09>; be sure to require this version for this feature.
@@ -590,6 +614,14 @@ B<Added in version 0.12>; be sure to require this version for this feature.
 This is the HTTP verb that will be used to make the HTTP request. The default
 value is C<GET>.
 
+=head2 warning
+
+B<Added in version 0.14>; be sure to require this version for this feature.
+
+This is a hash reference specifying different performance names (as the hash
+keys) and what threshold they need to be to result in a warning status. The
+format for the threshold is specified in L</PERFORMANCE THRESHOLD>.
+
 =head1 METHODS
 
 =head2 check
@@ -606,6 +638,40 @@ following:
   my $plugin = Plugin::Nagios::OverHTTP->new_with_options;
 
   exit $plugin->run;
+
+=head1 PERFORMANCE THRESHOLD
+
+Anywhere a performance threshold is accepted, the threshold value can be in any
+of the following formats (same as listed in
+L<http://nagiosplug.sourceforge.net/developer-guidelines.html#THRESHOLDFORMAT>):
+
+=over 4
+
+=item C<< <number> >>
+
+This will cause an alert if the level is less than zero or greater than
+C<< <number> >>.
+
+=item C<< <number>: >>
+
+This will cause an alert if the level is less than C<< <number> >>.
+
+=item C<< ~:<number> >>
+
+This will cause an alert if the level is greater than C<< <number> >>.
+
+=item C<< <number>:<number2> >>
+
+This will cause an alert if the level is less than C<< <number> >> or greater
+than C<< <number2> >>.
+
+=item C<< @<number>:<number2> >>
+
+This will cause an alert if the level is greater than or equal to
+C<< <number> >> and less than or equal to C<< <number2> >>. This is basically
+the exact opposite of the previous format.
+
+=back
 
 =head1 PROTOCOL
 
@@ -682,18 +748,18 @@ The following is an example of a simple bootstrapping of a plugin on a remote
 server.
 
   #!/usr/bin/env perl
-  
+
   use strict;
   use warnings;
-  
+
   my $output = qx{/usr/local/libexec/nagios/check_users2 -w 100 -c 500};
-  
+
   my $status = $? > 0 ? $? >> 8 : 3;
-  
+
   printf "X-Nagios-Status: %d\n", $status;
   print  "Content-Type: text/plain\n\n";
   print  $output if $output;
-  
+
   exit 0;
 
 =head1 DEPENDENCIES
