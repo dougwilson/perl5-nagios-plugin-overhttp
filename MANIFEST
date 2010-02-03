@@ -25,6 +25,7 @@ t/timeout.t
 xt/clean-namespaces.t
 xt/consistent-version.t
 xt/critic.t
+xt/eol.t
 xt/kwalitee.t
 xt/manifest.t
 xt/perl-version.t
