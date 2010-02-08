@@ -210,23 +210,8 @@ has 'warning' => (
 sub check {
 	my ($self) = @_;
 
-	# Save the current timeout for the useragent
-	my $old_timeout = $self->useragent->timeout;
-
-	# Set the useragent's timeout to our timeout
-	# if a timeout has been declared.
-	if ($self->has_timeout) {
-		$self->useragent->timeout($self->timeout);
-	}
-
-	# Form the HTTP request
-	my $request = HTTP::Request->new($self->verb, $self->url);
-
 	# Get the response of the plugin
-	my $response = $self->useragent->request($request);
-
-	# Restore the previous timeout value to the useragent
-	$self->useragent->timeout($old_timeout);
+	my $response = $self->_request;
 
 	## no critic (ControlStructures::ProhibitCascadingIfElse)
 	if ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message eq 'read timeout') {
@@ -441,6 +426,30 @@ sub _populate_from_url {
 
 	# Nothing useful to return, so chain
 	return $self;
+}
+sub _request {
+	my ($self) = @_;
+
+	# Save the current timeout for the useragent
+	my $old_timeout = $self->useragent->timeout;
+
+	# Set the useragent's timeout to our timeout
+	# if a timeout has been declared.
+	if ($self->has_timeout) {
+		$self->useragent->timeout($self->timeout);
+	}
+
+	# Form the HTTP request
+	my $request = HTTP::Request->new($self->verb, $self->url);
+
+	# Get the response of the plugin
+	my $response = $self->useragent->request($request);
+
+	# Restore the previous timeout value to the useragent
+	$self->useragent->timeout($old_timeout);
+
+	# Return the response
+	return $response;
 }
 sub _set_state {
 	my ($self, $status, $message) = @_;
