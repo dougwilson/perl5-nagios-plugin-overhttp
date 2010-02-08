@@ -213,25 +213,25 @@ sub check {
 	# Get the response of the plugin
 	my $response = $self->_request;
 
-	## no critic (ControlStructures::ProhibitCascadingIfElse)
-	if ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message eq 'read timeout') {
-		# Failure due to timeout
-		my $timeout = $self->has_timeout ? $self->timeout : $self->useragent->timeout;
+	if (!$response->is_success) {
+		if ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message eq 'read timeout') {
+			# Failure due to timeout
+			my $timeout = $self->has_timeout ? $self->timeout : $self->useragent->timeout;
 
-		$self->_set_state($STATUS_CRITICAL, sprintf 'Socket timeout after %d seconds', $timeout);
-		return;
-	}
-	elsif ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message =~ m{\(connect: \s timeout\)}msx) {
-		# Failure to connect to the host server
-		$self->_set_state($STATUS_CRITICAL, 'Connection refused ');
-		return;
-	}
-	elsif (HTTP::Status::is_server_error($response->code)) {
-		# There was some type of internal error
-		$self->_set_state($STATUS_CRITICAL, $response->status_line);
-		return;
-	}
-	elsif (!$response->is_success) {
+			$self->_set_state($STATUS_CRITICAL, sprintf 'Socket timeout after %d seconds', $timeout);
+			return;
+		}
+		elsif ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message =~ m{\(connect: \s timeout\)}msx) {
+			# Failure to connect to the host server
+			$self->_set_state($STATUS_CRITICAL, 'Connection refused ');
+			return;
+		}
+		elsif (HTTP::Status::is_server_error($response->code)) {
+			# There was some type of internal error
+			$self->_set_state($STATUS_CRITICAL, $response->status_line);
+			return;
+		}
+
 		# The response was not a success
 		$self->_set_state($STATUS_UNKNOWN, $response->status_line);
 		return;
