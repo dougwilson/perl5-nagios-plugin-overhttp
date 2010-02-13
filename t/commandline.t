@@ -3,7 +3,7 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 12;
+use Test::More tests => 14;
 
 use Nagios::Plugin::OverHTTP;
 
@@ -63,4 +63,19 @@ SKIP: {
 	skip 'Failure creating plugin.', 1 if !defined $plugin;
 
 	is($plugin->url, $url, 'Hostname + relative URL');
+}
+
+SKIP: {
+	my $url = 'http://example.net/nagios/check_service';
+	local @ARGV = split /\s+/, "--url=$url --critical time=4 --critical other=3.5"
+		." --warning time=10:3 --warning other=4:";
+
+	# Create new plugin with no arguments which means it will read from
+	# command line
+	my $plugin = Nagios::Plugin::OverHTTP->new_with_options;
+
+	skip 'Failure creating plugin.', 2 if !defined $plugin;
+
+	is_deeply($plugin->critical, {time => 4, other => 3.5}, 'Critical set');
+	is_deeply($plugin->warning, {time => '10:3', other => '4:'}, 'Warning set');
 }

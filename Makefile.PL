@@ -16,6 +16,7 @@ resources repository => 'git://github.com/dougwilson/perl5-nagios-plugin-overhtt
 requires
 	'Data::Validate::Domain'    => '0.02',
 	'Data::Validate::URI'       => '0.05',
+	'Carp'                      => 0,
 	'Getopt::Long::Descriptive' => 0,
 	'HTTP::Request'             => '5.827',
 	'HTTP::Status'              => '5.817',
@@ -34,8 +35,9 @@ requires
 test_requires
 	'HTTP::Response'   => 0,
 	'HTTP::Status'     => '5.817',
+	'Test::Exception'  => 0,
 	'Test::MockObject' => 0,
-	'Test::More'       => '0.82';
+	'Test::More'       => '0.94';
 
 # Modules that are required for tests in xt/
 author_requires

@@ -6,8 +6,9 @@ build_requires:
   ExtUtils::MakeMaker: 6.42
   HTTP::Response: 0
   HTTP::Status: 5.817
+  Test::Exception: 0
   Test::MockObject: 0
-  Test::More: 0.82
+  Test::More: 0.94
 configure_requires:
   ExtUtils::MakeMaker: 6.42
 distribution_type: module
@@ -29,7 +30,11 @@ provides:
   Nagios::Plugin::OverHTTP::Library:
     file: lib/Nagios/Plugin/OverHTTP/Library.pm
     version: 0.13
+  Nagios::Plugin::OverHTTP::PerformanceData:
+    file: lib/Nagios/Plugin/OverHTTP/PerformanceData.pm
+    version: 0.13
 requires:
+  Carp: 0
   Data::Validate::Domain: 0.02
   Data::Validate::URI: 0.05
   Getopt::Long::Descriptive: 0

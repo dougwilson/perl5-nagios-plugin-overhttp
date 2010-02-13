@@ -12,6 +12,7 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Nagios/Plugin/OverHTTP.pm
 lib/Nagios/Plugin/OverHTTP/Library.pm
+lib/Nagios/Plugin/OverHTTP/PerformanceData.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
@@ -21,6 +22,8 @@ t/attributes.t
 t/commandline.t
 t/constructor.t
 t/mock.t
+t/performance-data-module.t
+t/performance-data.t
 t/timeout.t
 xt/clean-namespaces.t
 xt/consistent-version.t

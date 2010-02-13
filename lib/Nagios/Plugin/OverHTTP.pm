@@ -31,6 +31,7 @@ use Carp qw(croak);
 use HTTP::Request 5.827;
 use HTTP::Status 5.817 qw(:constants);
 use LWP::UserAgent;
+use Nagios::Plugin::OverHTTP::PerformanceData;
 use Readonly 1.03;
 use URI;
 
@@ -124,6 +125,14 @@ has 'path' => (
 		# Clear the URL
 		$self->_clear_url;
 	},
+);
+has 'performance_data' => (
+	is            => 'ro',
+	isa           => 'ArrayRef',
+	documentation => q{Array of performance data from the plugin},
+
+	clearer       => '_clear_performance_data',
+	predicate     => 'has_performance_data',
 );
 has 'ssl' => (
 	is            => 'rw',
@@ -279,6 +288,35 @@ sub check {
 		}
 	}
 
+	#XXX: Fix later
+	if ($self->has_performance_data) {
+		DATA:
+		foreach my $data (@{$self->performance_data}) {
+			my $label = $data->label;
+
+			if ($status != $STATUS_CRITICAL
+			    && exists $self->critical->{$label}) {
+				# Check for critical since not critical already
+				if ($data->is_within_range($self->critical->{$label})) {
+					# Set new status to critical
+					$status = $STATUS_CRITICAL;
+
+					# Since this is the worst status, stop here
+					last DATA;
+				}
+			}
+			if ($status != $STATUS_WARNING
+			    && $status != $STATUS_CRITICAL
+			    && exists $self->warning->{$label}) {
+				# Check for warning since not warning or critical already
+				if ($data->is_within_range($self->warning->{$label})) {
+					# Set new status to warning
+					$status = $STATUS_WARNING;
+				}
+			}
+		}
+	}
+
 	# Set the plugin state
 	$self->_set_state($status, $message);
 
@@ -380,6 +418,38 @@ sub _extract_message_from_response {
 	else {
 		# Otherwise the message is the body
 		$message = $response->decoded_content;
+
+		# XXX: Fix this in a later refactor
+		if ($message =~ m{\|}msx) {
+			# Looks like there is performance data to parse somewhere
+			my @message_lines = split m{\v}msx, $message;
+
+			# Get the data from the first line
+			my (undef, $data) = split m{\|}msx, $message_lines[0];
+
+			# Search through the other lines for long performance data
+			LINE:
+			foreach my $line (1..$#message_lines) {
+				if ($message_lines[$line] =~ m{\| (\V+)}msx) {
+					# This line starts the long performance data
+					my $long_data = join q{ }, $1,
+						@message_lines[($line+1)..$#message_lines];
+
+					$data = defined $data ? "$data $long_data" : $long_data;
+
+					last LINE;
+				}
+			}
+
+			if (defined $data) {
+				# Parse all the performance data
+				my @data = map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
+					Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($data);
+
+				# Set attribute
+				$self->{performance_data} = \@data;
+			}
+		}
 	}
 
 	# Return the message
@@ -542,9 +612,12 @@ Arguments should be in the following format on the command line:
   --url http://example.net/check_something
   # Note that quotes may be used, based on your shell environment
 
-  # For bools, like SSL, you would use:
+  # For Booleans, like SSL, you would use:
   --ssl    # Enable SSL
   --no-ssl # Disable SSL
+
+  # For HashRefs, like warning and critical, you would use:
+  --warning name=value --warning name2=value2
 
 =head1 ATTRIBUTES
 

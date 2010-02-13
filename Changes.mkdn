@@ -1,6 +1,11 @@
 Revision history for Nagios-Plugin-OverHTTP
 ===========================================
 
+0.14 TO BE RELEASED
+-------------------
+  * Added initial support for performance data handling from the remote
+    plugin.
+
 0.13 Sun, October 24, 2009 18:32:42 -0500
 -----------------------------------------
   * Fixed a regular expression in `t/mock.t` to work with buggy `perl`
