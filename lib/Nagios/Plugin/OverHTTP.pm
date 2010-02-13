@@ -743,20 +743,22 @@ The protocol that this plugin uses to communicate with the Nagios plugins is
 unique to my knowledge. If anyone knows another way that plugins are
 communicating over HTTP then let me know.
 
-A request that returns a 5xx status will automatically return as CRITICAL and
-the plugin will display the error code and the status message (this will
-typically result in 500 Internal Server Error).
+A request that returns a C<5xx> status will automatically return as CRITICAL
+and the plugin will display the error code and the status message (this will
+typically result in C<500 Internal Server Error>).
 
-A request that returns a 2xx status will be parsed using the methods listed in
-L</HTTP BODY>.
+A request that returns a C<2xx> status will be parsed using the methods listed
+in L</HTTP BODY> and L</HTTP HEADER>.
 
-Any other status code will cause the plugin to return as UNKNOWN and the plugin
-will display the error code and the status message.
+If the response results is a redirect, the L</useragent> will automatically
+redirect the response and all processing will ultimately be done on the final
+response. Any other status code will cause the plugin to return as UNKNOWN and
+the plugin will display the error code and the status message.
 
 =head2 HTTP BODY
 
 The body of the HTTP response will be the output of the plugin unless the
-header C<X-Nagios-Information> is present. To determine what the status code
+header L</X-Nagios-Information> is present. To determine what the status code
 will be, the following methods are used:
 
 =over 4
@@ -764,23 +766,40 @@ will be, the following methods are used:
 =item 1.
 
 If a the header C<X-Nagios-Status> is present, the value from that is used as
-the output. The content of this header MUST be either the decimal return value
-of the plugin or an all capital letters. The different possibilities for this
-is listed in L</NAGIOS STATUSES>.
+the output. See L</X-Nagios-Status>.
 
 =item 2.
 
-If the header did not conform to proper specifications or was not present, then
-the status will be extracted from the body of the response. The very first set
-of all capital letters is taken from the body and used to determine the result.
-The different possibilities for this is listed in L</NAGIOS STATUSES>
+If the header was not present, then the status will be extracted from the body
+of the response. The very first set of all capital letters is taken from the
+body and used to determine the result. The different possibilities for this is
+listed in L</NAGIOS STATUSES>.
 
 =back
 
-Please note that if the header C<X-Nagios-Information> is present, then the
-status MUST be in the header C<X-Nagios-Status> as described above. The status
-will not be extracted from any text. The C<X-Nagios-Information> header support
-was added in version 0.12.
+=head2 HTTP HEADER
+
+The following HTTP headers have special meanings:
+
+=head3 C<< X-Nagios-Information >>
+
+B<Added in version 0.12>; be sure to require this version for this feature.
+
+If this header is present, then the content of this header will be used as the
+message for the plugin. Note: B<the body will not be parsed>. This is meant as
+an indication that the Nagios output is solely contained in the headers. This
+MUST contain the message ONLY. If this header appears multiple times, each
+instance is appended together with line breaks in the same order for multiline
+plugin output support.
+
+=head3 C<< X-Nagios-Status >>
+
+This header specifies the status. When this header is specified, then this is
+will override any other location where the status can come from. The content of
+this header MUST be either the decimal return value of the plugin or the status
+name in all capital letters. The different possibilities for this is listed in
+L</NAGIOS STATUSES>. If the header appears more than once, the first occurance
+is used.
 
 =head2 NAGIOS STATUSES
 
@@ -859,7 +878,7 @@ Douglas Christopher Wilson, C<< <doug at somethingdoug.com> >>
 =over
 
 =item * Alex Wollangk contributed the idea and code for the
-C<X-Nagios-Information> header.
+L</X-Nagios-Information> header.
 
 =back
 
@@ -901,7 +920,7 @@ L<http://search.cpan.org/dist/Nagios-Plugin-OverHTTP/>
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright 2009 Douglas Christopher Wilson, all rights reserved.
+Copyright 2009-2010 Douglas Christopher Wilson, all rights reserved.
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of either:
