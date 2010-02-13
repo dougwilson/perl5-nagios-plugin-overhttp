@@ -51,6 +51,12 @@ Readonly our $STATUS_CRITICAL => 2;
 Readonly our $STATUS_UNKNOWN  => 3;
 
 ###########################################################################
+# PRIVATE CONSTANTS
+Readonly my $HEADER_MESSAGE     => 'X-Nagios-Information';
+Readonly my $HEADER_PERFORMANCE => 'X-Nagios-Performance';
+Readonly my $HEADER_STATUS      => 'X-Nagios-Status';
+
+###########################################################################
 # ATTRIBUTES
 has 'autocorrect_unknown_html' => (
 	is            => 'rw',
@@ -209,11 +215,29 @@ sub check {
 		return;
 	}
 
-	# Get the message from the response
-	my $message = $self->_extract_message_from_response($response);
+	# Default status and message
+	my ($status, $message);
 
-	# Get the status from the response
-	my $status = $self->_extract_status_from_response($response);
+	# Default performance data
+	my @performance_data = ();
+
+	if (_should_parse_body($response)) {
+		# Parse the body
+		$self->_parse_response_body($response,
+			\$status, \$message, \@performance_data # Parse alters these
+		);
+	}
+
+	if (defined $response->header($HEADER_MESSAGE)) {
+		# The message will be from the header
+		$message = join qq{\n},
+			$response->header($HEADER_MESSAGE);
+	}
+
+	if (defined $response->header($HEADER_STATUS)) {
+		# The status will be from the header
+		$status = to_Status($response->header($HEADER_STATUS));
+	}
 
 	if (!defined $status) {
 		# The status was not found in the response
@@ -252,36 +276,37 @@ sub check {
 	}
 
 	#XXX: Fix later
-	if ($self->has_performance_data) {
-		DATA:
-		foreach my $data (@{$self->performance_data}) {
-			my $label = $data->label;
+	DATA:
+	foreach my $data (@performance_data) {
+		my $label = $data->label;
 
-			if ($status != $STATUS_CRITICAL
-			    && exists $self->critical->{$label}) {
-				# Check for critical since not critical already
-				if ($data->is_within_range($self->critical->{$label})) {
-					# Set new status to critical
-					$status = $STATUS_CRITICAL;
+		if ($status != $STATUS_CRITICAL
+			&& exists $self->critical->{$label}) {
+			# Check for critical since not critical already
+			if ($data->is_within_range($self->critical->{$label})) {
+				# Set new status to critical
+				$status = $STATUS_CRITICAL;
 
-					# Since this is the worst status, stop here
-					last DATA;
-				}
+				# Since this is the worst status, stop here
+				last DATA;
 			}
-			if ($status != $STATUS_WARNING
-			    && $status != $STATUS_CRITICAL
-			    && exists $self->warning->{$label}) {
-				# Check for warning since not warning or critical already
-				if ($data->is_within_range($self->warning->{$label})) {
-					# Set new status to warning
-					$status = $STATUS_WARNING;
-				}
+		}
+		if ($status != $STATUS_WARNING
+			&& $status != $STATUS_CRITICAL
+			&& exists $self->warning->{$label}) {
+			# Check for warning since not warning or critical already
+			if ($data->is_within_range($self->warning->{$label})) {
+				# Set new status to warning
+				$status = $STATUS_WARNING;
 			}
 		}
 	}
 
 	# Set the plugin state
 	$self->_set_state($status, $message);
+
+	# Set the performance data
+	$self->{performance_data} = \@performance_data;
 
 	return;
 }
@@ -360,76 +385,50 @@ sub _clear_state {
 	# Nothing useful to return, so chain
 	return $self;
 }
-sub _extract_message_from_response {
-	my ($self, $response) = @_;
+sub _parse_response_body {
+	my ($self, $response, $status_r, $message_r, $performance_data_r) = @_;
 
-	my $message;
+	# Set the message to the decoded content body
+	${$message_r} = $response->decoded_content;
 
-	# First priority is the X-Nagios-Information header
-	if (defined $response->header('X-Nagios-Information')) {
-		# Set the message
-		$message = join qq{\n},
-			$response->header('X-Nagios-Information');
+	# Parse for the status code
+	if (${$message_r} =~ m{\A (?:[^a-z]+ \s+)? (OK|WARNING|CRITICAL|UNKNOWN)}msx) {
+		# Found the status
+		${$status_r} = to_Status($1);
 	}
-	else {
-		# Otherwise the message is the body
-		$message = $response->decoded_content;
 
-		# XXX: Fix this in a later refactor
-		if ($message =~ m{\|}msx) {
-			# Looks like there is performance data to parse somewhere
-			my @message_lines = split m{\v}msx, $message;
+	if (${$message_r} =~ m{\|}msx) {
+		# Looks like there is performance data to parse somewhere
+		my @message_lines = split m{\v}msx, ${$message_r};
 
-			# Get the data from the first line
-			my (undef, $data) = split m{\|}msx, $message_lines[0];
+		# Get the data from the first line
+		my (undef, $data) = split m{\|}msx, $message_lines[0];
 
-			# Search through the other lines for long performance data
-			LINE:
-			foreach my $line (1..$#message_lines) {
-				if ($message_lines[$line] =~ m{\| (\V+)}msx) {
-					# This line starts the long performance data
-					my $long_data = join q{ }, $1,
-						@message_lines[($line+1)..$#message_lines];
+		# Search through the other lines for long performance data
+		LINE:
+		foreach my $line (1..$#message_lines) {
+			if ($message_lines[$line] =~ m{\| (\V+)}msx) {
+				# This line starts the long performance data
+				my $long_data = join q{ }, $1,
+					@message_lines[($line+1)..$#message_lines];
 
-					$data = defined $data ? "$data $long_data" : $long_data;
+				$data = defined $data ? "$data $long_data" : $long_data;
 
-					last LINE;
-				}
+				last LINE;
 			}
+		}
 
-			if (defined $data) {
-				# Parse all the performance data
-				my @data = map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
-					Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($data);
+		if (defined $data) {
+			# Parse all the performance data
+			my @data = map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
+				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($data);
 
-				# Set attribute
-				$self->{performance_data} = \@data;
-			}
+			# Add to performance data array
+			push @{$performance_data_r}, @data;
 		}
 	}
 
-	# Return the message
-	return $message;
-}
-sub _extract_status_from_response {
-	my ($self, $response) = @_;
-
-	# First priority is the X-Nagios-Status header
-	my $status = to_Status($response->header('X-Nagios-Status'));
-
-	if (!defined $status && !defined $response->header('X-Nagios-Information')) {
-		# Since X-Status-Information is not present, attempt to extract it
-		# from the body
-		my $message = $response->decoded_content;
-
-		if (my ($inc_status) = $message =~ m{\A ([A-Z]+)\b }msx) {
-			# Attempt to get the status from the first all-caps word
-			$status = to_Status($inc_status);
-		}
-	}
-
-	# Return the status
-	return $status;
+	return;
 }
 sub _populate_from_url {
 	my ($self) = @_;
@@ -552,6 +551,12 @@ sub _response_contains_plugin_output {
 
 	# It MUST contain output if it is a success
 	return $response->is_success;
+}
+sub _should_parse_body {
+	my ($response) = @_;
+
+	# Should if header message not present
+	return !defined $response->header($HEADER_MESSAGE);
 }
 
 ###########################################################################
