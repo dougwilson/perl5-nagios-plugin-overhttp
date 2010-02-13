@@ -1,8 +1,8 @@
 Revision history for Nagios-Plugin-OverHTTP
 ===========================================
 
-0.14 TO BE RELEASED
--------------------
+0.13_001 Fri, February 12, 2010 19:35:12 -0500
+----------------------------------------------
   * Added initial support for performance data handling from the remote
     plugin.
 
