@@ -30,7 +30,7 @@ use namespace::clean 0.04 -except => [qw(meta)];
 ###########################################################################
 # PRIVATE CONSTANTS
 Readonly my $NUMBER       => qr{[-+]? \d* (?: \. \d+)?}msx;
-Readonly my $QUOTED_LABEL => qr{' .+? (?<!') (?:'{2}+)? ' (?!')}msx;
+Readonly my $QUOTED_LABEL => qr{' .+? (?<!') (?:(?:'{2})+)? ' (?!')}msx;
 
 ###########################################################################
 # ATTRIBUTES

@@ -409,7 +409,7 @@ sub _parse_response_body {
 
 	if (${$message_r} =~ m{\|}msx) {
 		# Looks like there is performance data to parse somewhere
-		my @message_lines = split m{\v}msx, ${$message_r};
+		my @message_lines = split m{[\r\n]{1,2}}msx, ${$message_r};
 
 		# Get the data from the first line
 		my (undef, $data) = split m{\|}msx, $message_lines[0];
@@ -417,7 +417,7 @@ sub _parse_response_body {
 		# Search through the other lines for long performance data
 		LINE:
 		foreach my $line (1..$#message_lines) {
-			if ($message_lines[$line] =~ m{\| (\V+)}msx) {
+			if ($message_lines[$line] =~ m{\| ([^\r\n]+)}msx) {
 				# This line starts the long performance data
 				my $long_data = join q{ }, $1,
 					@message_lines[($line+1)..$#message_lines];
