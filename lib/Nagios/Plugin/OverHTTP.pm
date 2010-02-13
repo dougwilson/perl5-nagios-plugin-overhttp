@@ -86,15 +86,7 @@ has 'hostname' => (
 	clearer       => '_clear_hostname',
 	lazy          => 1,
 	predicate     => '_has_hostname',
-	trigger       => sub {
-		my ($self) = @_;
-
-		# Clear the state
-		$self->_clear_state;
-
-		# Clear the URL
-		$self->_clear_url;
-	},
+	trigger       => \&_reset_trigger,
 );
 has 'message' => (
 	is            => 'ro',
@@ -116,15 +108,7 @@ has 'path' => (
 	coerce        => 1,
 	lazy          => 1,
 	predicate     => '_has_path',
-	trigger       => sub {
-		my ($self) = @_;
-
-		# Clear the state
-		$self->_clear_state;
-
-		# Clear the URL
-		$self->_clear_url;
-	},
+	trigger       => \&_reset_trigger,
 );
 has 'performance_data' => (
 	is            => 'ro',
@@ -143,15 +127,7 @@ has 'ssl' => (
 	clearer       => '_clear_ssl',
 	lazy          => 1,
 	predicate     => '_has_ssl',
-	trigger       => sub {
-		my ($self) = @_;
-
-		# Clear the state
-		$self->_clear_state;
-
-		# Clear the URL
-		$self->_clear_url;
-	},
+	trigger       => \&_reset_trigger,
 );
 has 'timeout' => (
 	is            => 'rw',
@@ -520,6 +496,17 @@ sub _request {
 
 	# Return the response
 	return $response;
+}
+sub _reset_trigger {
+	my ($self) = @_;
+
+	# Clear the state
+	$self->_clear_state;
+
+	# Clear the generated URL
+	$self->_clear_url;
+
+	return;
 }
 sub _set_state {
 	my ($self, $status, $message) = @_;
