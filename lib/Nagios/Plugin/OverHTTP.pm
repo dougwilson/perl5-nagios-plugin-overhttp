@@ -239,6 +239,16 @@ sub check {
 		$status = to_Status($response->header($HEADER_STATUS));
 	}
 
+	if (defined $response->header($HEADER_PERFORMANCE)) {
+		# Add additional performance metrics
+		my $header_data = join q{ }, $response->header($HEADER_PERFORMANCE);
+
+		# Push
+		push @performance_data,
+			map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
+				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($header_data);
+	}
+
 	if (!defined $status) {
 		# The status was not found in the response
 		$status = $self->default_status;
