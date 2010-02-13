@@ -198,27 +198,14 @@ sub check {
 	# Get the response of the plugin
 	my $response = $self->_request;
 
-	if (!$response->is_success) {
-		if ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message eq 'read timeout') {
-			# Failure due to timeout
-			my $timeout = $self->has_timeout ? $self->timeout : $self->useragent->timeout;
+	if (!_response_contains_plugin_output($response)) {
+		# Get the response error information
+		my ($status, $message) = $self->_response_error_information($response);
 
-			$self->_set_state($STATUS_CRITICAL, sprintf 'Socket timeout after %d seconds', $timeout);
-			return;
-		}
-		elsif ($response->code == HTTP_INTERNAL_SERVER_ERROR && $response->message =~ m{\(connect: \s timeout\)}msx) {
-			# Failure to connect to the host server
-			$self->_set_state($STATUS_CRITICAL, 'Connection refused ');
-			return;
-		}
-		elsif (HTTP::Status::is_server_error($response->code)) {
-			# There was some type of internal error
-			$self->_set_state($STATUS_CRITICAL, $response->status_line);
-			return;
-		}
+		# Set the new state
+		$self->_set_state($status, $message);
 
-		# The response was not a success
-		$self->_set_state($STATUS_UNKNOWN, $response->status_line);
+		# End check early
 		return;
 	}
 
@@ -501,6 +488,42 @@ sub _reset_trigger {
 
 	return;
 }
+sub _response_error_information {
+	my ($self, $response) = @_;
+
+	if ($response->is_success) {
+		# This does not contain any error information
+		croak 'This response is not in error';
+	}
+
+	# Information to return
+	my ($status, $message) = ($STATUS_UNKNOWN, $response->status_line);
+
+	if (HTTP::Status::is_server_error($response->code)) {
+		# The response is a server error, which is critical
+		$status = $STATUS_CRITICAL;
+	}
+
+	if ($response->code == HTTP_INTERNAL_SERVER_ERROR) {
+		# This response likely came directly from LWP::UserAgent
+		if ($response->message eq 'read timeout') {
+			# Failure due to timeout
+			my $timeout = $self->has_timeout ? $self->timeout
+			                                 : $self->useragent->timeout
+			                                 ;
+
+			# Make the message explicitly about the timeout
+			$message = sprintf 'Socket timeout after %d seconds', $timeout;
+		}
+		elsif ($response->message =~ m{\(connect: \s timeout\)}msx) {
+			# Failure to connect to the host server
+			$message = 'Connection refused';
+		}
+	}
+
+	# Return status and message
+	return $status, $message;
+}
 sub _set_state {
 	my ($self, $status, $message) = @_;
 
@@ -520,6 +543,15 @@ sub _set_state {
 
 	# Nothing useful to return, so chain
 	return $self;
+}
+
+###########################################################################
+# PRIVATE FUNCTIONS
+sub _response_contains_plugin_output {
+	my ($response) = @_;
+
+	# It MUST contain output if it is a success
+	return $response->is_success;
 }
 
 ###########################################################################
@@ -792,6 +824,20 @@ MUST contain the message ONLY. If this header appears multiple times, each
 instance is appended together with line breaks in the same order for multiline
 plugin output support.
 
+  X-Nagios-Information: Connection to database succeeded
+  X-Nagios-Information: 'www'@'localhost'
+
+=head3 C<< X-Nagios-Performance >>
+
+B<Added in version 0.14>; be sure to require this version for this feature.
+
+This header specifies various performance data from the plugin. This will add
+performance to the list of any data collected from the response body as
+specified in L</HTTP BODY>. Many performance data may be contained in a single
+header seperated by spaces any many headers may be specified.
+
+  X-Nagios-Performance: 'connect time'=0.0012s
+
 =head3 C<< X-Nagios-Status >>
 
 This header specifies the status. When this header is specified, then this is
@@ -800,6 +846,8 @@ this header MUST be either the decimal return value of the plugin or the status
 name in all capital letters. The different possibilities for this is listed in
 L</NAGIOS STATUSES>. If the header appears more than once, the first occurance
 is used.
+
+  X-Nagios-Status: OK
 
 =head2 NAGIOS STATUSES
 
