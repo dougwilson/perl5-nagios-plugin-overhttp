@@ -310,45 +310,38 @@ sub run {
 
 ###########################################################################
 # PRIVATE METHODS
-sub _build_hostname {
-	my ($self) = @_;
+sub _build_after_check {
+	my ($self, $attribute) = @_;
 
-	# Build the hostname off the URL
+	# Preform the check
+	$self->check;
+
+	# Return the specified attribute for build
+	return $self->{$attribute};
+}
+sub _build_from_url {
+	my ($self, $attribute) = @_;
+
+	# Populate all fields from the URL
 	$self->_populate_from_url;
 
-	return $self->{hostname};
+	# Return the specified attribute for build
+	return $self->{$attribute};
+}
+sub _build_hostname {
+	return shift->_build_from_url('hostname');
 }
 sub _build_message {
-	my ($self) = @_;
-
-	# Preform the check
-	$self->check;
-
-	return $self->{message};
+	return shift->_build_after_check('message');
 }
 sub _build_path {
-	my ($self) = @_;
-
-	# Build the path off the URL
-	$self->_populate_from_url;
-
-	return $self->{path};
+	return shift->_build_from_url('path');
 }
 sub _build_ssl {
-	my ($self) = @_;
-
-	# Build the SSL off the URL
-	$self->_populate_from_url;
-
-	return $self->{ssl};
+	return shift->_build_from_url('ssl');
 }
 sub _build_status {
-	my ($self) = @_;
-
-	# Preform the check
-	$self->check;
-
-	return $self->{status};
+	return shift->_build_after_check('status');
 }
 sub _build_url {
 	my ($self) = @_;
