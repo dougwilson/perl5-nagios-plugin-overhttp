@@ -15,7 +15,7 @@ plan skip_all => 'Set TEST_AUTHOR to enable this test'
 test_requires 'Test::Pod' => '1.22';
 
 # Add this here to fool the Kwalitee for the time being
-eval { use Test::Pod; };
+eval { require Test::Pod; };
 
 # Test the POD files
 all_pod_files_ok();

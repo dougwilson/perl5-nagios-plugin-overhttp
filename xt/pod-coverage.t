@@ -16,7 +16,7 @@ test_requires 'Test::Pod::Coverage' => '1.08';
 test_requires 'Pod::Coverage'       => '0.18';
 
 # Add this here to fool the Kwalitee for the time being
-eval { use Test::Pod::Coverage; };
+eval { require Test::Pod::Coverage; };
 
 # Test the POD, except for Moose privates
 all_pod_coverage_ok({
