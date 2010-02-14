@@ -10,10 +10,11 @@ use Nagios::Plugin::OverHTTP;
 SKIP: {
 	local @ARGV = '--help';
 
-	my $skip = 1;
+	my $skip = 0;
 	# Create new plugin with no arguments which means it will read from
 	# command line
 	eval {
+		no strict 'refs';
 		local *{'CORE::GLOBAL::exit'} = sub { $skip = 1; };
 		Nagios::Plugin::OverHTTP->new_with_options;
 	};
