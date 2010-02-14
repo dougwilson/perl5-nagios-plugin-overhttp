@@ -1,6 +1,14 @@
 Revision history for Nagios-Plugin-OverHTTP
 ===========================================
 
+0.13_002 Sun, February 14, 2010 00:22:01 -0500
+----------------------------------------------
+  * Fixed issue where new regular expressions were not compatible with
+    Perl 5.8 (introduced in 0.13_001)
+  * Add support for X-Nagios-Performance
+  * Refactoring of the `check` method
+  * Bottom sections of POD rewritten
+
 0.13_001 Fri, February 12, 2010 19:35:12 -0500
 ----------------------------------------------
   * Added initial support for performance data handling from the remote
