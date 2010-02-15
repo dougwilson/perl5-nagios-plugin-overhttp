@@ -407,6 +407,18 @@ sub _parse_response_body {
 		${$status_r} = to_Status($1);
 	}
 
+	if (!defined ${$status_r} && $response->headers->content_is_html) {
+		# This is HTML, so what we will do is strip all surrounding tags
+		# since it looks like a valid status wasn't found
+		${$message_r} =~ s{< [^>]+ >}{}msx; # XXX: Fix me later
+
+		# Reparse for the status code
+		if (${$message_r} =~ m{\A (?:[^a-z]+ \s+)? (OK|WARNING|CRITICAL|UNKNOWN)}msx) {
+			# Found the status
+			${$status_r} = to_Status($1);
+		}
+	}
+
 	if (${$message_r} =~ m{\|}msx) {
 		# Looks like there is performance data to parse somewhere
 		my @message_lines = split m{[\r\n]{1,2}}msx, ${$message_r};
