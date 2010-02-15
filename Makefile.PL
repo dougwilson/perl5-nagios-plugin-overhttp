@@ -53,4 +53,15 @@ recursive_author_tests('xt');
 # Write the provided classes in the META
 auto_provides;
 
+if (eval "require Getopt::Long::Descriptive 0.082; 1;") {
+	# Getopt::Long::Descriptive is install, make sure it's not a broken version
+	if (Getopt::Long::Descriptive->VERSION ge '0.082'
+	    && Getopt::Long::Descriptive->VERSION lt '0.084') {
+		# Two versions of Getopt::Long::Descriptive have a bug that affects this
+		# package, and so if you have that version, we require the version where
+		# it was fixed.
+		requires 'Getopt::Long::Descriptive' => '0.084';
+	}
+}
+
 WriteAll;
