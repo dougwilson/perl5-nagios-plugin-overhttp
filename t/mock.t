@@ -9,7 +9,7 @@ use HTTP::Status 5.817 qw(:constants);
 use Test::More 0.82;
 use Test::MockObject;
 
-plan tests => 96;
+plan tests => 101;
 
 # Create a mock LWP::UserAgent
 my $fake_ua = Test::MockObject->new;
@@ -131,6 +131,13 @@ my %test = (
 			['X-Nagios-Information' => 'I am HEAD'],
 			['X-Nagios-Status'      => 'OK'       ],
 		],
+	},
+	'HTML' => {
+		description => 'Output contained in HTML',
+		body_like   => qr/has ended/,
+		status      => $Nagios::Plugin::OverHTTP::STATUS_OK,
+		http_body   => "<body>\nANP OK - This process has ended |time=7s;;;0 age=35439s;;;0\n</body>\n",
+		http_headers => [['Content-Type' => 'text/html']],
 	},
 );
 
