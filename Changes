@@ -1,6 +1,12 @@
 Revision history for Nagios-Plugin-OverHTTP
 ===========================================
 
+0.13_004 Mon, February 15, 2010 19:35:47 -0500
+----------------------------------------------
+  * Fixed issue where the global flag was not set on the regular
+    expression that strips the SGML tags, causing only the first tag
+    to be removed.
+
 0.13_003 Mon, February 15, 2010 11:32:12 -0500
 ----------------------------------------------
   * Added where if content-type of response is text/html all SGML tags

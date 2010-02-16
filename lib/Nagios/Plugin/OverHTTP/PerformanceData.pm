@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.13_003';
+our $VERSION   = '0.13_004';
 
 ###########################################################################
 # MOOSE
@@ -312,7 +312,7 @@ Nagios plugin
 =head1 VERSION
 
 This documentation refers to <Nagios::Plugin::OverHTTP::PerformanceData>
-version 0.13_003
+version 0.13_004
 
 =head1 SYNOPSIS
 
