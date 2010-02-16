@@ -136,7 +136,7 @@ my %test = (
 		description => 'Output contained in HTML',
 		body_like   => qr/has ended/,
 		status      => $Nagios::Plugin::OverHTTP::STATUS_OK,
-		http_body   => "<body>\nANP OK - This process has ended |time=7s;;;0 age=35439s;;;0\n</body>\n",
+		http_body   => "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-t\nransitional.dtd\">\n<body>\nANP OK - This process has ended |time=7s;;;0 age=35439s;;;0\n</body>\n",
 		http_headers => [['Content-Type' => 'text/html']],
 	},
 );
