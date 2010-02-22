@@ -312,7 +312,7 @@ Nagios plugin
 
 =head1 VERSION
 
-This documentation refers to <Nagios::Plugin::OverHTTP::PerformanceData>
+This documentation refers to L<Nagios::Plugin::OverHTTP::PerformanceData>
 version 0.14
 
 =head1 SYNOPSIS

@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.13_004';
+our $VERSION   = '0.14';
 
 ###########################################################################
 # MOOSE
@@ -259,31 +259,14 @@ sub check {
 		}
 	}
 
-	#XXX: Fix later
-	DATA:
-	foreach my $data (@performance_data) {
-		my $label = $data->label;
-
-		if ($status != $STATUS_CRITICAL
-			&& exists $self->critical->{$label}) {
-			# Check for critical since not critical already
-			if ($data->is_within_range($self->critical->{$label})) {
-				# Set new status to critical
-				$status = $STATUS_CRITICAL;
-
-				# Since this is the worst status, stop here
-				last DATA;
-			}
-		}
-		if ($status != $STATUS_WARNING
-			&& $status != $STATUS_CRITICAL
-			&& exists $self->warning->{$label}) {
-			# Check for warning since not warning or critical already
-			if ($data->is_within_range($self->warning->{$label})) {
-				# Set new status to warning
-				$status = $STATUS_WARNING;
-			}
-		}
+	if (_critical_performance_data(\@performance_data, override => $self->critical) > 0) {
+		# CRITICAL!
+		$status = $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL;
+	}
+	elsif ($status != $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL
+		&& _warning_performance_data(\@performance_data, override => $self->warning) > 0) {
+		# WARNING
+		$status = $Nagios::Plugin::OverHTTP::Library::STATUS_WARNING;
 	}
 
 	# Set the plugin state
@@ -465,6 +448,43 @@ sub _set_state {
 }
 
 ###########################################################################
+# PRIVATE FUNCTIONS
+sub _critical_performance_data {
+	my ($data_r, %args) = @_;
+
+	# Get the override arguments
+	my $override = $args{override} || {};
+
+	# Make closure for grep
+	my $is_critical = sub {
+		my ($data) = @_;
+		my $label  = $data->label; # Cache value
+
+		return $data->is_critical || (exists $override->{$label} && $data->is_within_range($override->{$label}));
+	};
+
+	# Return the objects that are critical
+	return grep { $is_critical->($_) } @{$data_r};
+}
+sub _warning_performance_data {
+	my ($data_r, %args) = @_;
+
+	# Get the override arguments
+	my $override = $args{override} || {};
+
+	# Make closure for grep
+	my $is_warning = sub {
+		my ($data) = @_;
+		my $label  = $data->label; # Cache value
+
+		return $data->is_warning || (exists $override->{$label} && $data->is_within_range($override->{$label}));
+	};
+
+	# Return the objects that are warning
+	return grep { $is_warning->($_) } @{$data_r};
+}
+
+###########################################################################
 # MAKE MOOSE OBJECT IMMUTABLE
 __PACKAGE__->meta->make_immutable;
 
@@ -478,7 +498,7 @@ Nagios::Plugin::OverHTTP - Nagios plugin to check over the HTTP protocol.
 
 =head1 VERSION
 
-Version 0.13_004
+This documentation refers to L<Nagios::Plugin::OverHTTP> version 0.14
 
 =head1 SYNOPSIS
 

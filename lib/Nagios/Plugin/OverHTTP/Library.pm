@@ -139,7 +139,7 @@ L<Nagios::Plugin::OverHTTP>
 
 =head1 VERSION
 
-This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.14
+This documentation refers to L<Nagios::Plugin::OverHTTP::Library> version 0.14
 
 =head1 SYNOPSIS
 

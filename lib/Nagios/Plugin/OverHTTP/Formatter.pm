@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.13_004';
+our $VERSION   = '0.14';
 
 ###########################################################################
 # MOOSE ROLE
@@ -75,8 +75,8 @@ Nagios::Plugin::OverHTTP::Formatter - Moose role for output formatters
 
 =head1 VERSION
 
-This documentation refers to <Nagios::Plugin::OverHTTP::Formatter> version
-0.13_004
+This documentation refers to L<Nagios::Plugin::OverHTTP::Formatter> version
+0.14
 
 =head1 SYNOPSIS
 

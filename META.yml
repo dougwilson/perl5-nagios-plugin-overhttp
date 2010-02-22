@@ -26,25 +26,25 @@ no_index:
 provides:
   Nagios::Plugin::OverHTTP:
     file: lib/Nagios/Plugin/OverHTTP.pm
-    version: 0.13_004
+    version: 0.14
   Nagios::Plugin::OverHTTP::Formatter:
     file: lib/Nagios/Plugin/OverHTTP/Formatter.pm
-    version: 0.13_004
+    version: 0.14
   Nagios::Plugin::OverHTTP::Library:
     file: lib/Nagios/Plugin/OverHTTP/Library.pm
     version: 0.14
   Nagios::Plugin::OverHTTP::Parser:
     file: lib/Nagios/Plugin/OverHTTP/Parser.pm
-    version: 0.13_004
+    version: 0.14
   Nagios::Plugin::OverHTTP::Parser::Standard:
     file: lib/Nagios/Plugin/OverHTTP/Parser/Standard.pm
-    version: 0.13_004
+    version: 0.14
   Nagios::Plugin::OverHTTP::PerformanceData:
     file: lib/Nagios/Plugin/OverHTTP/PerformanceData.pm
-    version: 0.13_004
+    version: 0.14
   Nagios::Plugin::OverHTTP::Response:
     file: lib/Nagios/Plugin/OverHTTP/Response.pm
-    version: 0.13_004
+    version: 0.14
 requires:
   Carp: 0
   Data::Validate::Domain: 0.02
@@ -70,4 +70,4 @@ resources:
   homepage: http://github.com/dougwilson/perl5-nagios-plugin-overhttp/
   license: http://dev.perl.org/licenses/
   repository: git://github.com/dougwilson/perl5-nagios-plugin-overhttp.git
-version: 0.13_004
+version: 0.14
