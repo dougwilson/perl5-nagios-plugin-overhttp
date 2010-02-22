@@ -29,6 +29,7 @@ requires
 	'MooseX::Types'             => '0.08',
 	'MooseX::Types::Moose'      => 0,
 	'Readonly'                  => '1.03',
+	'Regexp::Common'            => '2.119',
 	'Scalar::Util'              => '1.19',
 	'URI'                       => 0,
 	'namespace::clean'          => '0.04';

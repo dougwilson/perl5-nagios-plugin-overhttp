@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.13_004';
+our $VERSION   = '0.14';
 
 ###########################################################################
 # MOOSE
@@ -22,6 +22,7 @@ use MooseX::Types::Moose qw(Int Str);
 # MODULE IMPORTS
 use Carp qw(croak);
 use Readonly 1.03;
+use Regexp::Common 2.119;
 
 ###########################################################################
 # ALL IMPORTS BEFORE THIS WILL BE ERASED
@@ -29,8 +30,8 @@ use namespace::clean 0.04 -except => [qw(meta)];
 
 ###########################################################################
 # PRIVATE CONSTANTS
-Readonly my $NUMBER       => qr{[-+]? \d* (?: \. \d+)?}msx;
-Readonly my $QUOTED_LABEL => qr{' .+? (?<!') (?:(?:'{2})+)? ' (?!')}msx;
+Readonly my $NUMBER       => $RE{num}{real};
+Readonly my $QUOTED_LABEL => $RE{delimited}{-delim => q{'}}{-esc => q{'}};
 
 ###########################################################################
 # ATTRIBUTES
@@ -281,7 +282,7 @@ sub _performance_data_args_from_string {
 
 	# Remove all undefined values
 	while (my ($key, $value) = each %args) {
-		if (!defined $value) {
+		if (!defined $value || $value eq q{}) {
 			delete $args{$key};
 		}
 	}
@@ -312,7 +313,7 @@ Nagios plugin
 =head1 VERSION
 
 This documentation refers to <Nagios::Plugin::OverHTTP::PerformanceData>
-version 0.13_004
+version 0.14
 
 =head1 SYNOPSIS
 
@@ -493,6 +494,8 @@ This module is dependent on the following modules:
 =item * L<MooseX::Types::Moose>
 
 =item * L<Readonly> 1.03
+
+=item * L<Regexp::Common> 2.119
 
 =item * L<namespace::clean> 0.04
 
