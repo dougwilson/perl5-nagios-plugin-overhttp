@@ -31,6 +31,7 @@ use Carp qw(croak);
 use HTTP::Request 5.827;
 use HTTP::Status 5.817 qw(:constants);
 use LWP::UserAgent;
+use Nagios::Plugin::OverHTTP::Parser::Standard;
 use Nagios::Plugin::OverHTTP::PerformanceData;
 use Readonly 1.03;
 use URI;
@@ -215,53 +216,32 @@ sub check {
 		return;
 	}
 
-	# Default status and message
-	my ($status, $message);
+	# Parse the response with the standard parser
+	my $parsed_response = Nagios::Plugin::OverHTTP::Parser::Standard
+		->new(default_status => $self->default_status)
+		->parse($response);
+
+	# Get the parsed message and status
+	my $message = $parsed_response->message;
+	my $status  = $parsed_response->status;
 
 	# Default performance data
-	my @performance_data = ();
+	my @performance_data = $parsed_response->has_performance_data
+		? map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
+			Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($parsed_response->performance_data)
+		: ();
 
-	if (_should_parse_body($response)) {
-		# Parse the body
-		$self->_parse_response_body($response,
-			\$status, \$message, \@performance_data # Parse alters these
-		);
-	}
-
-	if (defined $response->header($HEADER_MESSAGE)) {
-		# The message will be from the header
-		$message = join qq{\n},
-			$response->header($HEADER_MESSAGE);
-	}
-
-	if (defined $response->header($HEADER_STATUS)) {
-		# The status will be from the header
-		$status = to_Status($response->header($HEADER_STATUS));
-	}
-
-	if (defined $response->header($HEADER_PERFORMANCE)) {
-		# Add additional performance metrics
-		my $header_data = join q{ }, $response->header($HEADER_PERFORMANCE);
-
-		# Push
-		push @performance_data,
-			map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
-				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($header_data);
-	}
-
-	if (!defined $status) {
-		# The status was not found in the response
-		$status = $self->default_status;
-
+	if ($message eq q{} && $status eq $self->default_status) {
 		if ($self->autocorrect_unknown_html
 			&& !defined $response->header('X-Nagios-Information')) {
 			# The setting is active to automatically correct unknown HTML
-			if ($message =~ m{\S+\s*[\r\n]+\s*\S+}msx) {
+			if ($response->decoded_content =~ m{\S+\s*[\r\n]+\s*\S+}msx) {
 				# This is a multi-line response.
-				if ($message =~ m{<(?:html|body|head)[^>]*>}imsx) {
+				if ($response->decoded_content =~ m{<(?:html|body|head)[^>]*>}imsx) {
 					# This looks like an HTML response. Most likely it is a
 					# response from the server that was intended for a user
 					# to see.
+					$message = $response->decoded_content;
 
 					# This will be searching through the content to find
 					# something to use as the first line.
@@ -395,63 +375,6 @@ sub _clear_state {
 	# Nothing useful to return, so chain
 	return $self;
 }
-sub _parse_response_body {
-	my ($self, $response, $status_r, $message_r, $performance_data_r) = @_;
-
-	# Set the message to the decoded content body
-	${$message_r} = $response->decoded_content;
-
-	# Parse for the status code
-	if (${$message_r} =~ m{\A (?:[^a-z]+ \s+)? (OK|WARNING|CRITICAL|UNKNOWN)}msx) {
-		# Found the status
-		${$status_r} = to_Status($1);
-	}
-
-	if (!defined ${$status_r} && $response->headers->content_is_html) {
-		# This is HTML, so what we will do is strip all surrounding tags
-		# since it looks like a valid status wasn't found
-		${$message_r} =~ s{\s* < [^>]+ > \s*}{}gmsx; # XXX: Fix me later
-
-		# Reparse for the status code
-		if (${$message_r} =~ m{\A (?:[^a-z]+ \s+)? (OK|WARNING|CRITICAL|UNKNOWN)}msx) {
-			# Found the status
-			${$status_r} = to_Status($1);
-		}
-	}
-
-	if (${$message_r} =~ m{\|}msx) {
-		# Looks like there is performance data to parse somewhere
-		my @message_lines = split m{[\r\n]{1,2}}msx, ${$message_r};
-
-		# Get the data from the first line
-		my (undef, $data) = split m{\|}msx, $message_lines[0];
-
-		# Search through the other lines for long performance data
-		LINE:
-		foreach my $line (1..$#message_lines) {
-			if ($message_lines[$line] =~ m{\| ([^\r\n]+)}msx) {
-				# This line starts the long performance data
-				my $long_data = join q{ }, $1,
-					@message_lines[($line+1)..$#message_lines];
-
-				$data = defined $data ? "$data $long_data" : $long_data;
-
-				last LINE;
-			}
-		}
-
-		if (defined $data) {
-			# Parse all the performance data
-			my @data = map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
-				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($data);
-
-			# Add to performance data array
-			push @{$performance_data_r}, @data;
-		}
-	}
-
-	return;
-}
 sub _populate_from_url {
 	my ($self) = @_;
 
@@ -573,12 +496,6 @@ sub _response_contains_plugin_output {
 
 	# It MUST contain output if it is a success
 	return $response->is_success;
-}
-sub _should_parse_body {
-	my ($response) = @_;
-
-	# Should if header message not present
-	return !defined $response->header($HEADER_MESSAGE);
 }
 
 ###########################################################################

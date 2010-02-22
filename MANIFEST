@@ -11,8 +11,12 @@ inc/Module/Install/Metadata.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Nagios/Plugin/OverHTTP.pm
+lib/Nagios/Plugin/OverHTTP/Formatter.pm
 lib/Nagios/Plugin/OverHTTP/Library.pm
+lib/Nagios/Plugin/OverHTTP/Parser.pm
+lib/Nagios/Plugin/OverHTTP/Parser/Standard.pm
 lib/Nagios/Plugin/OverHTTP/PerformanceData.pm
+lib/Nagios/Plugin/OverHTTP/Response.pm
 Makefile.PL
 MANIFEST			This list of files
 META.yml
