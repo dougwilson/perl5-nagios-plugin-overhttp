@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.13_004';
+our $VERSION   = '0.14';
 
 ###########################################################################
 # MOOSE
@@ -30,12 +30,18 @@ use MooseX::Types::Moose qw(Int Str);
 # MODULE IMPORTS
 use Data::Validate::Domain 0.02;
 use Data::Validate::URI 0.05;
-require Nagios::Plugin::OverHTTP; # Fix for recursive require
 use Readonly 1.03;
 
 ###########################################################################
 # ALL IMPORTS BEFORE THIS WILL BE ERASED
 use namespace::clean 0.04 -except => [qw(meta)];
+
+###########################################################################
+# CONSTANTS
+Readonly our $STATUS_OK       => 0;
+Readonly our $STATUS_WARNING  => 1;
+Readonly our $STATUS_CRITICAL => 2;
+Readonly our $STATUS_UNKNOWN  => 3;
 
 ###########################################################################
 # PRIVATE CONSTANTS
@@ -108,10 +114,10 @@ sub _status_from_str {
 	$status_string = uc $status_string;
 
 	my %status_prefix_map = (
-		OK       => $Nagios::Plugin::OverHTTP::STATUS_OK,
-		WARNING  => $Nagios::Plugin::OverHTTP::STATUS_WARNING,
-		CRITICAL => $Nagios::Plugin::OverHTTP::STATUS_CRITICAL,
-		UNKNOWN  => $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN,
+		OK       => $STATUS_OK,
+		WARNING  => $STATUS_WARNING,
+		CRITICAL => $STATUS_CRITICAL,
+		UNKNOWN  => $STATUS_UNKNOWN,
 	);
 
 	if (!exists $status_prefix_map{$status_string}) {
@@ -133,7 +139,7 @@ L<Nagios::Plugin::OverHTTP>
 
 =head1 VERSION
 
-This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.13_004
+This documentation refers to <Nagios::Plugin::OverHTTP::Library> version 0.14
 
 =head1 SYNOPSIS
 
@@ -196,6 +202,24 @@ greater than zero.
 
 This specifies a URL. This is a string and is validated using the
 L<Data::Validate::URI> library with the C<is_uri> function.
+
+=head1 CONSTANTS PROVIDED
+
+=head2 C<< $STATUS_OK >>
+
+Represents a status of OK.
+
+=head2 C<< $STATUS_WARNING >>
+
+Represents a status of warning.
+
+=head2 C<< $STATUS_CRITICAL >>
+
+Represents a status of critical.
+
+=head2 C<< $STATUS_UNKNOWN >>
+
+Represents a status of unknown.
 
 =head1 DEPENDENCIES
 

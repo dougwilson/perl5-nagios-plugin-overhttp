@@ -16,7 +16,7 @@ use MooseX::StrictConstructor 0.08;
 
 ###########################################################################
 # MOOSE TYPES
-use Nagios::Plugin::OverHTTP::Library 0.12 qw(
+use Nagios::Plugin::OverHTTP::Library 0.14 qw(
 	Hostname
 	HTTPVerb
 	Path
@@ -50,12 +50,6 @@ Readonly our $STATUS_OK       => 0;
 Readonly our $STATUS_WARNING  => 1;
 Readonly our $STATUS_CRITICAL => 2;
 Readonly our $STATUS_UNKNOWN  => 3;
-
-###########################################################################
-# PRIVATE CONSTANTS
-Readonly my $HEADER_MESSAGE     => 'X-Nagios-Information';
-Readonly my $HEADER_PERFORMANCE => 'X-Nagios-Performance';
-Readonly my $HEADER_STATUS      => 'X-Nagios-Status';
 
 ###########################################################################
 # ATTRIBUTES
@@ -202,34 +196,34 @@ has 'warning' => (
 sub check {
 	my ($self) = @_;
 
+	my ($message, $status, @performance_data);
+
 	# Get the response of the plugin
-	my $response = $self->_request;
+	my $response = eval { $self->_request };
 
-	if (!_response_contains_plugin_output($response)) {
-		# Get the response error information
-		my ($status, $message) = $self->_response_error_information($response);
+	if ($@) {
+		# Message is string of the error
+		$message = "$@";
 
-		# Set the new state
-		$self->_set_state($status, $message);
-
-		# End check early
-		return;
+		# Status is critical
+		$status = $Nagios::Plugin::OverHTTP::STATUS_CRITICAL;
 	}
+	else {
+		# Parse the response with the standard parser
+		my $parsed_response = Nagios::Plugin::OverHTTP::Parser::Standard
+			->new(default_status => $self->default_status)
+			->parse($response);
 
-	# Parse the response with the standard parser
-	my $parsed_response = Nagios::Plugin::OverHTTP::Parser::Standard
-		->new(default_status => $self->default_status)
-		->parse($response);
+		# Get the parsed message and status
+		$message = $parsed_response->message;
+		$status  = $parsed_response->status;
 
-	# Get the parsed message and status
-	my $message = $parsed_response->message;
-	my $status  = $parsed_response->status;
-
-	# Default performance data
-	my @performance_data = $parsed_response->has_performance_data
-		? map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
-			Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($parsed_response->performance_data)
-		: ();
+		# Default performance data
+		@performance_data = $parsed_response->has_performance_data
+			? map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
+				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($parsed_response->performance_data)
+			: ();
+	}
 
 	if ($message eq q{} && $status eq $self->default_status) {
 		if ($self->autocorrect_unknown_html
@@ -418,6 +412,23 @@ sub _request {
 	# Restore the previous timeout value to the useragent
 	$self->useragent->timeout($old_timeout);
 
+	if (!$response->is_success && $response->code == HTTP_INTERNAL_SERVER_ERROR) {
+		# This response likely came directly from LWP::UserAgent
+		if ($response->message eq 'read timeout') {
+			# Failure due to timeout
+			my $timeout = $self->has_timeout ? $self->timeout
+			                                 : $self->useragent->timeout
+			                                 ;
+
+			# Make the message explicitly about the timeout
+			croak sprintf 'Socket timeout after %d seconds', $timeout;
+		}
+		elsif ($response->message =~ m{\(connect: \s timeout\)}msx) {
+			# Failure to connect to the host server
+			croak 'Connection refused';
+		}
+	}
+
 	# Return the response
 	return $response;
 }
@@ -431,42 +442,6 @@ sub _reset_trigger {
 	$self->_clear_url;
 
 	return;
-}
-sub _response_error_information {
-	my ($self, $response) = @_;
-
-	if ($response->is_success) {
-		# This does not contain any error information
-		croak 'This response is not in error';
-	}
-
-	# Information to return
-	my ($status, $message) = ($STATUS_UNKNOWN, $response->status_line);
-
-	if (HTTP::Status::is_server_error($response->code)) {
-		# The response is a server error, which is critical
-		$status = $STATUS_CRITICAL;
-	}
-
-	if ($response->code == HTTP_INTERNAL_SERVER_ERROR) {
-		# This response likely came directly from LWP::UserAgent
-		if ($response->message eq 'read timeout') {
-			# Failure due to timeout
-			my $timeout = $self->has_timeout ? $self->timeout
-			                                 : $self->useragent->timeout
-			                                 ;
-
-			# Make the message explicitly about the timeout
-			$message = sprintf 'Socket timeout after %d seconds', $timeout;
-		}
-		elsif ($response->message =~ m{\(connect: \s timeout\)}msx) {
-			# Failure to connect to the host server
-			$message = 'Connection refused';
-		}
-	}
-
-	# Return status and message
-	return $status, $message;
 }
 sub _set_state {
 	my ($self, $status, $message) = @_;
@@ -487,15 +462,6 @@ sub _set_state {
 
 	# Nothing useful to return, so chain
 	return $self;
-}
-
-###########################################################################
-# PRIVATE FUNCTIONS
-sub _response_contains_plugin_output {
-	my ($response) = @_;
-
-	# It MUST contain output if it is a success
-	return $response->is_success;
 }
 
 ###########################################################################

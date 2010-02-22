@@ -15,9 +15,7 @@ use Moose 0.74;
 
 ###########################################################################
 # MOOSE TYPES
-use Nagios::Plugin::OverHTTP::Library qw(
-	Status
-);
+use Nagios::Plugin::OverHTTP::Library qw(Status);
 
 ###########################################################################
 # ALL IMPORTS BEFORE THIS WILL BE ERASED

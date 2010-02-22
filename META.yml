@@ -32,7 +32,7 @@ provides:
     version: 0.13_004
   Nagios::Plugin::OverHTTP::Library:
     file: lib/Nagios/Plugin/OverHTTP/Library.pm
-    version: 0.13_004
+    version: 0.14
   Nagios::Plugin::OverHTTP::Parser:
     file: lib/Nagios/Plugin/OverHTTP/Parser.pm
     version: 0.13_004

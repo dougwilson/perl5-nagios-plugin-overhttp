@@ -25,6 +25,8 @@ use Nagios::Plugin::OverHTTP::Library qw(Status);
 # MODULE IMPORTS
 use Carp qw(croak);
 use HTML::Strip 1.05;
+use HTTP::Status 5.817;
+use Nagios::Plugin::OverHTTP::Library 0.14;
 use Nagios::Plugin::OverHTTP::Response;
 use Readonly 1.03;
 
@@ -75,6 +77,18 @@ sub parse {
 
 		# Since nothing was parsed before, just set
 		%collected_information = %{$header_information};
+	}
+
+	if (!exists $collected_information{message}) {
+		if (!$response->is_success) {
+			# The response is not a success
+			$collected_information{message} = $response->status_line;
+		}
+
+		if (HTTP::Status::is_server_error($response->code)) {
+			# Internal server error, so modify the default status code
+			$collected_information{status} = $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL;
+		}
 	}
 
 	if (!exists $collected_information{message}) {
@@ -301,7 +315,11 @@ This module is dependent on the following modules:
 
 =item * L<HTML::Strip> 1.05
 
+=item * L<HTTP::Status> 5.817
+
 =item * L<Moose> 0.74
+
+=item * L<Nagios::Plugin::OverHTTP::Library> 0.14
 
 =item * L<Nagios::Plugin::OverHTTP::Parser>
 
