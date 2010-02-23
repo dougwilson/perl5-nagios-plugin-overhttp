@@ -35,7 +35,7 @@ Readonly my $ERROR_BAD_STATUS => q{Unable to change the status %s to exit code};
 ###########################################################################
 # REQUIRED METHODS
 requires qw(
-	exit_status
+	exit_code
 	stderr
 	stdout
 );
@@ -99,7 +99,7 @@ This module is a Moose role that defines the required API for formatters.
 
 =head1 REQUIRED METHODS
 
-=head2 exit_status
+=head2 exit_code
 
 This must return an integer which may be used as the exit status for the
 plugin.
@@ -134,7 +134,7 @@ representing the standard exit code for that status.
       my ($self) = @_;
 
       # Just return the default
-      return $self->standard_status_exit_code($self->status);
+      return $self->standard_status_exit_code($self->response->status);
   }
 
 =head1 DIAGNOSTICS

@@ -31,6 +31,7 @@ use Carp qw(croak);
 use HTTP::Request 5.827;
 use HTTP::Status 5.817 qw(:constants);
 use LWP::UserAgent;
+use Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto;
 use Nagios::Plugin::OverHTTP::Parser::Standard;
 use Nagios::Plugin::OverHTTP::PerformanceData;
 use Readonly 1.03;
@@ -118,6 +119,7 @@ has 'performance_data' => (
 
 	clearer       => '_clear_performance_data',
 	predicate     => 'has_performance_data',
+	traits        => ['NoGetopt'],
 );
 has 'ssl' => (
 	is            => 'rw',
@@ -203,7 +205,7 @@ sub check {
 
 	if ($@) {
 		# Message is string of the error
-		$message = "$@";
+		$message = qq{$@};
 
 		# Status is critical
 		$status = $Nagios::Plugin::OverHTTP::STATUS_CRITICAL;

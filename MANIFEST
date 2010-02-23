@@ -12,6 +12,9 @@ inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
 lib/Nagios/Plugin/OverHTTP.pm
 lib/Nagios/Plugin/OverHTTP/Formatter.pm
+lib/Nagios/Plugin/OverHTTP/Formatter/Nagios/Auto.pm
+lib/Nagios/Plugin/OverHTTP/Formatter/Nagios/Version2.pm
+lib/Nagios/Plugin/OverHTTP/Formatter/Nagios/Version3.pm
 lib/Nagios/Plugin/OverHTTP/Library.pm
 lib/Nagios/Plugin/OverHTTP/Parser.pm
 lib/Nagios/Plugin/OverHTTP/Parser/Standard.pm

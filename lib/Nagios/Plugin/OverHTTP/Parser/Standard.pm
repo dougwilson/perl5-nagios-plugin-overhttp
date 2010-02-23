@@ -297,6 +297,29 @@ version 0.14
 
 This is the standard parser for L<Nagios::Plugin::OverHTTP>.
 
+=head1 CONSTRUCTOR
+
+This is fully object-oriented, and as such before any method can be used, the
+constructor needs to be called to create an object to work with.
+
+=head2 new
+
+This will construct a new plugin object.
+
+=over
+
+=item B<< new(%attributes) >>
+
+C<< %attributes >> is a HASH where the keys are attributes (specified in the
+L</ATTRIBUTES> section).
+
+=item B<< new($attributes) >>
+
+C<< $attributes >> is a HASHREF where the keys are attributes (specified in the
+L</ATTRIBUTES> section).
+
+=back
+
 =head1 METHODS
 
 =head2 parse
