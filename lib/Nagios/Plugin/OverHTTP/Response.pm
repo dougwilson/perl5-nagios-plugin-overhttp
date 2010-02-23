@@ -12,6 +12,7 @@ our $VERSION   = '0.14';
 ###########################################################################
 # MOOSE
 use Moose 0.74;
+use MooseX::StrictConstructor 0.08;
 
 ###########################################################################
 # MOOSE TYPES
@@ -45,6 +46,10 @@ has 'status' => (
 	coerce => 1,
 	required => 1,
 );
+
+###########################################################################
+# MAKE MOOSE OBJECT IMMUTABLE
+__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -101,6 +106,8 @@ This module is dependent on the following modules:
 =over 4
 
 =item * L<Moose> 0.74
+
+=item * L<MooseX::StrictConstructor> 0.08
 
 =item * L<Nagios::Plugin::OverHTTP::Library>
 
