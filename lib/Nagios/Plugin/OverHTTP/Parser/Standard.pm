@@ -12,6 +12,7 @@ our $VERSION   = '0.14';
 ###########################################################################
 # MOOSE
 use Moose 0.74;
+use MooseX::StrictConstructor 0.08;
 
 ###########################################################################
 # ROLES
@@ -271,6 +272,10 @@ sub _strip_html {
 	return $body;
 }
 
+###########################################################################
+# MAKE MOOSE OBJECT IMMUTABLE
+__PACKAGE__->meta->make_immutable;
+
 1;
 
 __END__
@@ -322,6 +327,8 @@ This module is dependent on the following modules:
 =item * L<HTTP::Status> 5.817
 
 =item * L<Moose> 0.74
+
+=item * L<MooseX::StrictConstructor> 0.08
 
 =item * L<Nagios::Plugin::OverHTTP::Library> 0.14
 
