@@ -12,10 +12,12 @@ our $VERSION   = '0.14';
 ###########################################################################
 # MODULE IMPORTS
 use Carp qw(croak);
+use English qw(-no_match_vars);
 use Env::Path 0.04;
 use IPC::System::Simple 0.13;
 use Readonly 1.03;
 use Regexp::Common 2.119;
+use Try::Tiny;
 
 ###########################################################################
 # ALL IMPORTS BEFORE THIS WILL BE ERASED
@@ -33,12 +35,14 @@ Readonly my $VERSION_RE           => $RE{num}{int}{-sep => q{.}}{-group => q{1,3
 sub new {
 	my ($class, @args) = @_;
 
-	# Find all Nagios executables and run them
+	# Find all Nagios executables
+	my @nagios_executables = Env::Path->PATH->Whence($NAGIOS_EXECUTABLE);
+
+	# Get a list of version numbers
 	my @nagios_versions =
 		grep { defined $_ }
-		map { m{^nagios \s+ (?:core \s+)? ($VERSION_RE)}imsx }
-		map { eval { IPC::System::Simple::capturex($_, q{-v}) } }
-		Env::Path->PATH->Whence($NAGIOS_EXECUTABLE);
+		map { _get_nagios_version($_) }
+		@nagios_executables;
 
 	# The module to use
 	my $formatter = $DEFAULT_FORMATTER;
@@ -71,11 +75,33 @@ sub new {
 	# Make sure the formatter is loaded
 	if (!eval "require $formatter; 1;") {
 		# Module failed to load
-		croak $@;
+		croak $EVAL_ERROR;
 	}
 
 	# Return a new formatter instance
 	return $formatter->new(@args);
+}
+
+###########################################################################
+# PRIVATE FUNCTIONS
+sub _get_nagios_version {
+	my ($nagios_executable) = @_;
+
+	# Get the output from using the -v switch
+	my $version_info = try {
+		# Capture output
+		IPC::System::Simple::capturex($nagios_executable, q{-v});
+	}
+	catch {
+		# If error thrown, return empty string
+		q{};
+	};
+
+	# Parse out the version number
+	my ($version) = $version_info =~ m{^nagios \s+ (?:core \s+)? ($VERSION_RE)}imsx;
+
+	# Return the version (or undef)
+	return $version;
 }
 
 1;
@@ -162,6 +188,8 @@ This module is dependent on the following modules:
 
 =item * L<Carp>
 
+=item * L<English>
+
 =item * L<Env::Path> 0.04
 
 =item * L<IPC::System::Simple> 0.13
@@ -169,6 +197,8 @@ This module is dependent on the following modules:
 =item * L<Readonly> 1.03
 
 =item * L<Regexp::Common> 2.119
+
+=item * L<Try::Tiny>
 
 =item * L<namespace::clean> 0.04
 

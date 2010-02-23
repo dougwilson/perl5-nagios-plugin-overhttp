@@ -16,6 +16,7 @@ requires
 	'Data::Validate::Domain'    => '0.02',
 	'Data::Validate::URI'       => '0.05',
 	'Carp'                      => 0,
+	'English'                   => 0,
 	'Env::Path'                 => '0.04',
 	'Getopt::Long::Descriptive' => 0,
 	'HTML::Strip'               => '1.04',
@@ -32,6 +33,7 @@ requires
 	'Readonly'                  => '1.03',
 	'Regexp::Common'            => '2.119',
 	'Scalar::Util'              => '1.19',
+	'Try::Tiny'                 => 0,
 	'URI'                       => 0,
 	'namespace::clean'          => '0.04';
 

@@ -35,6 +35,7 @@ use Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto;
 use Nagios::Plugin::OverHTTP::Parser::Standard;
 use Nagios::Plugin::OverHTTP::PerformanceData;
 use Readonly 1.03;
+use Try::Tiny;
 use URI;
 
 ###########################################################################
@@ -201,16 +202,19 @@ sub check {
 	my ($message, $status, @performance_data);
 
 	# Get the response of the plugin
-	my $response = eval { $self->_request };
-
-	if ($@) {
+	my $response = try {
+		# Make request
+		$self->_request;
+	}
+	catch {
 		# Message is string of the error
-		$message = qq{$@};
+		$message = qq{$_};
 
 		# Status is critical
 		$status = $Nagios::Plugin::OverHTTP::STATUS_CRITICAL;
-	}
-	else {
+	};
+
+	if (!defined $status) {
 		# Parse the response with the standard parser
 		my $parsed_response = Nagios::Plugin::OverHTTP::Parser::Standard
 			->new(default_status => $self->default_status)
@@ -808,6 +812,8 @@ server.
 =item * L<MooseX::StrictConstructor> 0.08
 
 =item * L<Readonly> 1.03
+
+=item * L<Try::Tiny>
 
 =item * L<URI>
 
