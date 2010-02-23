@@ -81,8 +81,10 @@ sub parse {
 
 	if (!exists $collected_information{message}) {
 		if (!$response->is_success) {
-			# The response is not a success
-			$collected_information{message} = $response->status_line;
+			# The response is not a success; status line as first line, then content
+			$collected_information{message} = join qq{\n},
+				$response->status_line,
+				$response->decoded_content;
 		}
 
 		if (HTTP::Status::is_server_error($response->code)) {
@@ -123,8 +125,10 @@ sub parse {
 	}
 
 	if (!exists $collected_information{message}) {
-		# The message still does not exist, so set to empty string
-		$collected_information{message} = q{};
+		# The message still does not exist, so set to status line and response
+		$collected_information{message} = join qq{\n},
+			$response->status_line,
+			$response->as_string;
 	}
 
 	if (!exists $collected_information{status}) {

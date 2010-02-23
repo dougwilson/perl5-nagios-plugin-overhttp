@@ -68,7 +68,7 @@ my %test = (
 		description => 'No status and strange HTML',
 		body_like   => qr/UNKNOWN - I am title/,
 		status      => $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN,
-		http_body   => "<html>\n<title>I am title</title>\n</html>",
+		http_body   => "<html>\n<h1>I am title</h1>\n</html>",
 	},
 	'header_message' => {
 		description  => 'Message in header',

@@ -225,40 +225,6 @@ sub check {
 			: ();
 	}
 
-	if ($message eq q{} && $status eq $self->default_status) {
-		if ($self->autocorrect_unknown_html
-			&& !defined $response->header('X-Nagios-Information')) {
-			# The setting is active to automatically correct unknown HTML
-			if ($response->decoded_content =~ m{\S+\s*[\r\n]+\s*\S+}msx) {
-				# This is a multi-line response.
-				if ($response->decoded_content =~ m{<(?:html|body|head)[^>]*>}imsx) {
-					# This looks like an HTML response. Most likely it is a
-					# response from the server that was intended for a user
-					# to see.
-					$message = $response->decoded_content;
-
-					# This will be searching through the content to find
-					# something to use as the first line.
-
-					# See if a title or h1 can be found
-					my ($title) = $message =~ m{<title[^>]*>(.+?)</title>}imsx;
-					my ($h1   ) = $message =~ m{<h1   [^>]*>(.+?)</h1   >}imsx;
-
-					if (defined $title) {
-						# There was a title, so add it as the first line of the
-						# message
-						$message = sprintf "%s\n%s", $title, $message;
-					}
-					elsif (defined $h1) {
-						# There was a h1, so add it as the first line of the
-						# message
-						$message = sprintf "%s\n%s", $h1, $message;
-					}
-				}
-			}
-		}
-	}
-
 	if (_critical_performance_data(\@performance_data, override => $self->critical) > 0) {
 		# CRITICAL!
 		$status = $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL;
