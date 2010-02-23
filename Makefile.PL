@@ -1,7 +1,6 @@
 use inc::Module::Install;
 
 use Module::Install::AuthorRequires 0.02;
-use Module::Install::AuthorTests 0.002;
 
 name     'Nagios-Plugin-OverHTTP';
 all_from 'lib/Nagios/Plugin/OverHTTP.pm';
@@ -51,9 +50,6 @@ author_requires
 
 # Enable tests to be in multi-level directories
 tests_recursive;
-
-# Author tests in xt/
-recursive_author_tests('xt');
 
 # Write the provided classes in the META
 auto_provides;
