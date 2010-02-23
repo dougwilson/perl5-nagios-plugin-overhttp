@@ -42,7 +42,7 @@ Readonly my $HEADER_PERFORMANCE => 'X-Nagios-Performance';
 Readonly my $HEADER_STATUS      => 'X-Nagios-Status';
 
 ###########################################################################
-# METHODS
+# ATTRIBUTES
 has 'auto_correct_html' => (
 	is  => 'rw',
 	isa => 'Bool',
