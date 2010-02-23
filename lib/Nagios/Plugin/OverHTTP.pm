@@ -78,7 +78,8 @@ has 'default_status' => (
 	documentation => q{The default status if none specified in the response},
 
 	coerce        => 1,
-	default       => $STATUS_UNKNOWN,
+	default       => $Nagios::Plugin::OverHTTP::Library::STATUS_UNKNOWN,
+	trigger       => sub { shift->_clear_parser },
 );
 has 'hostname' => (
 	is            => 'rw',
@@ -99,6 +100,16 @@ has 'message' => (
 	clearer       => '_clear_message',
 	lazy          => 1,
 	predicate     => 'has_message',
+	traits        => ['NoGetopt'],
+);
+has 'parser' => (
+	is            => 'rw',
+	does          => 'Nagios::Plugin::OverHTTP::Parser',
+	documentation => q{HTTP response parser},
+
+	builder       => '_build_parser',
+	clearer       => '_clear_parser',
+	lazy          => 1,
 	traits        => ['NoGetopt'],
 );
 has 'path' => (
@@ -201,10 +212,19 @@ sub check {
 
 	my ($message, $status, @performance_data);
 
+	# Save the current timeout for the useragent
+	my $old_timeout = $self->useragent->timeout;
+
+	# Set the useragent's timeout to our timeout
+	# if a timeout has been declared.
+	if ($self->has_timeout) {
+		$self->useragent->timeout($self->timeout);
+	}
+
 	# Get the response of the plugin
 	my $response = try {
 		# Make request
-		$self->_request;
+		$self->request(method => $self->verb, url => $self->url);
 	}
 	catch {
 		# Message is string of the error
@@ -212,22 +232,23 @@ sub check {
 
 		# Status is critical
 		$status = $Nagios::Plugin::OverHTTP::STATUS_CRITICAL;
+
+		# Response undefined
+		undef;
 	};
 
-	if (!defined $status) {
-		# Parse the response with the standard parser
-		my $parsed_response = Nagios::Plugin::OverHTTP::Parser::Standard
-			->new(default_status => $self->default_status)
-			->parse($response);
+	# Restore the previous timeout value to the useragent
+	$self->useragent->timeout($old_timeout);
 
+	if (defined $response) {
 		# Get the parsed message and status
-		$message = $parsed_response->message;
-		$status  = $parsed_response->status;
+		$message = $response->message;
+		$status  = $response->status;
 
 		# Default performance data
-		@performance_data = $parsed_response->has_performance_data
+		@performance_data = $response->has_performance_data
 			? map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
-				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($parsed_response->performance_data)
+				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($response->performance_data)
 			: ();
 	}
 
@@ -248,6 +269,47 @@ sub check {
 	$self->{performance_data} = \@performance_data;
 
 	return;
+}
+sub create_request {
+	my ($self, %args) = @_;
+
+	# Splice the arguments out
+	my ($method, $url) = @args{qw(method url)};
+
+	if (!defined $method) {
+		# Default method is GET
+		$method = q{GET};
+	}
+
+	# Just the method and URL are supported
+	return HTTP::Request->new($method, $url);
+}
+sub request {
+	my ($self, @args) = @_;
+
+	# The request is either the only argument or created from the HASH
+	my $request = @args == 1 ? $args[0]
+	                         : $self->create_request(@args)
+	                         ;
+
+	# Get the response of the plugin
+	my $response = $self->useragent->request($request);
+
+	if (!$response->is_success && $response->code == HTTP_INTERNAL_SERVER_ERROR) {
+		# This response likely came directly from LWP::UserAgent
+		if ($response->message eq 'read timeout') {
+			# Make the message explicitly about the timeout
+			croak sprintf 'Socket timeout after %d seconds',
+				$self->useragent->timeout;
+		}
+		elsif ($response->message =~ m{\(connect: \s timeout\)}msx) {
+			# Failure to connect to the host server
+			croak 'Connection refused';
+		}
+	}
+
+	# Return the parsed response
+	return $self->parser->parse($response);
 }
 sub run {
 	my ($self) = @_;
@@ -287,6 +349,13 @@ sub _build_message {
 }
 sub _build_path {
 	return shift->_build_from_url('path');
+}
+sub _build_parser {
+	my ($self) = @_;
+
+	# Standard parser with the default status
+	return Nagios::Plugin::OverHTTP::Parser::Standard
+		->new(default_status => $self->default_status);
 }
 sub _build_ssl {
 	return shift->_build_from_url('ssl');
@@ -345,47 +414,6 @@ sub _populate_from_url {
 
 	# Nothing useful to return, so chain
 	return $self;
-}
-sub _request {
-	my ($self) = @_;
-
-	# Save the current timeout for the useragent
-	my $old_timeout = $self->useragent->timeout;
-
-	# Set the useragent's timeout to our timeout
-	# if a timeout has been declared.
-	if ($self->has_timeout) {
-		$self->useragent->timeout($self->timeout);
-	}
-
-	# Form the HTTP request
-	my $request = HTTP::Request->new($self->verb, $self->url);
-
-	# Get the response of the plugin
-	my $response = $self->useragent->request($request);
-
-	# Restore the previous timeout value to the useragent
-	$self->useragent->timeout($old_timeout);
-
-	if (!$response->is_success && $response->code == HTTP_INTERNAL_SERVER_ERROR) {
-		# This response likely came directly from LWP::UserAgent
-		if ($response->message eq 'read timeout') {
-			# Failure due to timeout
-			my $timeout = $self->has_timeout ? $self->timeout
-			                                 : $self->useragent->timeout
-			                                 ;
-
-			# Make the message explicitly about the timeout
-			croak sprintf 'Socket timeout after %d seconds', $timeout;
-		}
-		elsif ($response->message =~ m{\(connect: \s timeout\)}msx) {
-			# Failure to connect to the host server
-			croak 'Connection refused';
-		}
-	}
-
-	# Return the response
-	return $response;
 }
 sub _reset_trigger {
 	my ($self) = @_;
@@ -574,6 +602,13 @@ or a string with the name of the status, like:
 This is the hostname of the remote server. This will automatically be populated
 if L</url> is set.
 
+=head2 parser
+
+B<Added in version 0.14>; be sure to require this version for this feature.
+
+This is a response parser object that does L<Nagios::Plugin::OverHTTP::Parser>.
+By default, it is the L<Nagios::Plugin::OverHTTP::Parser::Standard> parser.
+
 =head2 path
 
 This is the path to the remove Nagios plugin on the remote server. This will
@@ -624,6 +659,36 @@ format for the threshold is specified in L</PERFORMANCE THRESHOLD>.
 
 This will run the remote check. This is usually not needed, as attempting to
 access the message or status will result in the check being performed.
+
+=head2 create_request
+
+B<Added in version 0.14>; be sure to require this version for this feature.
+
+This will create a L<HTTP::Request> object from the arguments including any
+additional headers added by the plugin. This method takes a HASH as the
+argument with the following keys:
+
+=over 4
+
+=item method
+
+This is the HTTP request method. By default this will be C<GET>.
+
+=item url
+
+B<Required>. This is the URL to request.
+
+=back
+
+=head2 request
+
+B<Added in version 0.14>; be sure to require this version for this feature.
+
+This will return a L<Nagios::Plugin::OverHTTP::Response> object representing
+the plugin response from the server. This method takes either one argument
+which is a L<HTTP::Request> object that will use L</useragent> to make the
+request, or a HASH with the same arguments as L</create_request>. The response
+is parsed with the parser in L</parser>.
 
 =head2 run
 
