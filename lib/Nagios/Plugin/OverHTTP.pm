@@ -54,6 +54,10 @@ Readonly our $STATUS_CRITICAL => 2;
 Readonly our $STATUS_UNKNOWN  => 3;
 
 ###########################################################################
+# PRIVATE CONSTANTS
+Readonly my $DEFAULT_REQUEST_METHOD => q{GET};
+
+###########################################################################
 # ATTRIBUTES
 has 'autocorrect_unknown_html' => (
 	is            => 'rw',
@@ -231,7 +235,7 @@ sub check {
 		$message = qq{$_};
 
 		# Status is critical
-		$status = $Nagios::Plugin::OverHTTP::STATUS_CRITICAL;
+		$status = $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL;
 
 		# Response undefined
 		undef;
@@ -277,8 +281,8 @@ sub create_request {
 	my ($method, $url) = @args{qw(method url)};
 
 	if (!defined $method) {
-		# Default method is GET
-		$method = q{GET};
+		# Default method since method is not provided
+		$method = $DEFAULT_REQUEST_METHOD;
 	}
 
 	# Just the method and URL are supported
@@ -430,10 +434,10 @@ sub _set_state {
 	my ($self, $status, $message) = @_;
 
 	my %status_prefix_map = (
-		$STATUS_OK       => 'OK',
-		$STATUS_WARNING  => 'WARNING',
-		$STATUS_CRITICAL => 'CRITICAL',
-		$STATUS_UNKNOWN  => 'UNKNOWN',
+		$Nagios::Plugin::OverHTTP::Library::STATUS_OK       => 'OK',
+		$Nagios::Plugin::OverHTTP::Library::STATUS_WARNING  => 'WARNING',
+		$Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL => 'CRITICAL',
+		$Nagios::Plugin::OverHTTP::Library::STATUS_UNKNOWN  => 'UNKNOWN',
 	);
 
 	if ($message !~ m{\A $status_prefix_map{$status}}msx) {

@@ -6,6 +6,7 @@ use warnings 'all';
 use Test::More 0.82 tests => 28;
 
 use Nagios::Plugin::OverHTTP;
+use Nagios::Plugin::OverHTTP::Library 0.14;
 
 # Create new plugin
 my $plugin = new_ok('Nagios::Plugin::OverHTTP');
@@ -32,9 +33,9 @@ is(eval{$plugin->default_status(1); $plugin->default_status}, 1);
 is(eval{$plugin->default_status(2); $plugin->default_status}, 2);
 eval{$plugin->default_status(6);};
 is($plugin->default_status, 2);
-is(eval{$plugin->default_status('OK'); $plugin->default_status}, $Nagios::Plugin::OverHTTP::STATUS_OK);
-is(eval{$plugin->default_status('unknown'); $plugin->default_status}, $Nagios::Plugin::OverHTTP::STATUS_UNKNOWN);
-is(eval{$plugin->default_status($Nagios::Plugin::OverHTTP::STATUS_CRITICAL); $plugin->default_status}, $Nagios::Plugin::OverHTTP::STATUS_CRITICAL);
+is(eval{$plugin->default_status('OK'); $plugin->default_status}, $Nagios::Plugin::OverHTTP::Library::STATUS_OK);
+is(eval{$plugin->default_status('unknown'); $plugin->default_status}, $Nagios::Plugin::OverHTTP::Library::STATUS_UNKNOWN);
+is(eval{$plugin->default_status($Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL); $plugin->default_status}, $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL);
 
 # Change the SSL
 $plugin->ssl(1);
