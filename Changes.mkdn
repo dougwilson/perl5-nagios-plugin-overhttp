@@ -1,12 +1,15 @@
 Revision history for Nagios-Plugin-OverHTTP
 ===========================================
 
-0.14 TO BE RELEASED
+0.14 Sun, March 7, 2010 16:53:12 -0500
 -------------------
   * Added new feature where performance data is parsed from the body and
     `X-Nagios-Performance` header (in `Parser::Standard`).
   * If `Content-Type` is `text/html` or XHTML, then `HTML::Strip` is used to
     remove all (X)HTML tags (in `Parser::Standard`).
+  * Added full support for handling performance data from the remote plugin.
+    Use `critical` or `warning` command line switches to monitor performance
+    data.
   * Fixed minor POD mistakes.
 
 0.13 Sun, October 24, 2009 18:32:42 -0500

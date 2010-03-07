@@ -1,37 +1,16 @@
 Revision history for Nagios-Plugin-OverHTTP
 ===========================================
 
-0.14 TO BE RELEASED
+0.14 Sun, March 7, 2010 16:53:12 -0500
 -------------------
   * Added new feature where performance data is parsed from the body and
     `X-Nagios-Performance` header (in `Parser::Standard`).
   * If `Content-Type` is `text/html` or XHTML, then `HTML::Strip` is used to
     remove all (X)HTML tags (in `Parser::Standard`).
+  * Added full support for handling performance data from the remote plugin.
+    Use `critical` or `warning` command line switches to monitor performance
+    data.
   * Fixed minor POD mistakes.
-
-0.13_004 Mon, February 15, 2010 19:35:47 -0500
-----------------------------------------------
-  * Fixed issue where the global flag was not set on the regular
-    expression that strips the SGML tags, causing only the first tag
-    to be removed.
-
-0.13_003 Mon, February 15, 2010 11:32:12 -0500
-----------------------------------------------
-  * Added where if content-type of response is text/html all SGML tags
-    are stripped.
-
-0.13_002 Sun, February 14, 2010 00:22:01 -0500
-----------------------------------------------
-  * Fixed issue where new regular expressions were not compatible with
-    Perl 5.8 (introduced in 0.13_001)
-  * Add support for X-Nagios-Performance
-  * Refactoring of the `check` method
-  * Bottom sections of POD rewritten
-
-0.13_001 Fri, February 12, 2010 19:35:12 -0500
-----------------------------------------------
-  * Added initial support for performance data handling from the remote
-    plugin.
 
 0.13 Sun, October 24, 2009 18:32:42 -0500
 -----------------------------------------
