@@ -205,6 +205,11 @@ sub _parse_body {
 		}
 	}
 
+	if ($collected_information{performance_data} eq q{}) {
+		# There was no collected performance data
+		delete $collected_information{performance_data};
+	}
+
 	# Return the collected information
 	return \%collected_information;
 }
