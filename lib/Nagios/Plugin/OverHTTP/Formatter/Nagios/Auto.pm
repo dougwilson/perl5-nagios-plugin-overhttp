@@ -26,7 +26,7 @@ use namespace::clean 0.04 -except => [qw(meta)];
 ###########################################################################
 # PRIVATE CONSTANTS
 Readonly my $NAGIOS_FORMATTER_PRE => 'Nagios::Plugin::OverHTTP::Formatter::Nagios';
-Readonly my $DEFAULT_FORMATTER    => join q{::}, $NAGIOS_FORMATTER_PRE, q{Version2};
+Readonly my $DEFAULT_FORMATTER    => join q{::}, $NAGIOS_FORMATTER_PRE, q{Version3};
 Readonly my $NAGIOS_EXECUTABLE    => 'nagios';
 Readonly my $VERSION_RE           => $RE{num}{int}{-sep => q{.}}{-group => q{1,3}};
 

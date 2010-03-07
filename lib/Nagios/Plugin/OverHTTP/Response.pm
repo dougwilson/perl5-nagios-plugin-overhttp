@@ -15,6 +15,10 @@ use Moose 0.74;
 use MooseX::StrictConstructor 0.08;
 
 ###########################################################################
+# MOOSE ROLES
+with 'MooseX::Clone';
+
+###########################################################################
 # MOOSE TYPES
 use Nagios::Plugin::OverHTTP::Library qw(Status);
 
@@ -25,25 +29,26 @@ use namespace::clean 0.04 -except => [qw(meta)];
 ###########################################################################
 # ATTRIBUTES
 has 'message' => (
-	is => 'ro',
+	is  => 'ro',
 	isa => 'Str',
 	required => 1,
 );
 has 'performance_data' => (
-	is => 'ro',
+	is  => 'ro',
 	isa => 'Str',
-	clearer => '_clear_performance_data',
+	clearer   => '_clear_performance_data',
 	predicate => 'has_performance_data',
 );
 has 'response' => (
 	is  => 'ro',
 	isa => 'HTTP::Response',
 	required => 1,
+	traits   => [qw/Clone/],
 );
 has 'status' => (
-	is => 'ro',
+	is  => 'ro',
 	isa => Status,
-	coerce => 1,
+	coerce   => 1,
 	required => 1,
 );
 
@@ -106,6 +111,8 @@ This module is dependent on the following modules:
 =over 4
 
 =item * L<Moose> 0.74
+
+=item * L<MooseX::Clone> 0.05
 
 =item * L<MooseX::StrictConstructor> 0.08
 

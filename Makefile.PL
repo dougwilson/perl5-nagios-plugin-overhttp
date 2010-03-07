@@ -26,6 +26,7 @@ requires
 	'LWP::UserAgent'            => 0,
 	'Moose'                     => '0.74',
 	'Moose::Role'               => '0.74',
+	'MooseX::Clone'             => '0.05',
 	'MooseX::Getopt'            => '0.19',
 	'MooseX::StrictConstructor' => '0.08',
 	'MooseX::Types'             => '0.08',

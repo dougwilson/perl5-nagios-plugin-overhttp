@@ -32,8 +32,8 @@ use HTTP::Request 5.827;
 use HTTP::Status 5.817 qw(:constants);
 use LWP::UserAgent;
 use Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto;
+use Nagios::Plugin::OverHTTP::Middleware::PerformanceData;
 use Nagios::Plugin::OverHTTP::Parser::Standard;
-use Nagios::Plugin::OverHTTP::PerformanceData;
 use Readonly 1.03;
 use Try::Tiny;
 use URI;
@@ -128,15 +128,6 @@ has 'path' => (
 	predicate     => '_has_path',
 	trigger       => \&_reset_trigger,
 );
-has 'performance_data' => (
-	is            => 'ro',
-	isa           => 'ArrayRef',
-	documentation => q{Array of performance data from the plugin},
-
-	clearer       => '_clear_performance_data',
-	predicate     => 'has_performance_data',
-	traits        => ['NoGetopt'],
-);
 has 'ssl' => (
 	is            => 'rw',
 	isa           => 'Bool',
@@ -214,7 +205,7 @@ has 'warning' => (
 sub check {
 	my ($self) = @_;
 
-	my ($message, $status, @performance_data);
+	my ($message, $status);
 
 	# Save the current timeout for the useragent
 	my $old_timeout = $self->useragent->timeout;
@@ -245,32 +236,24 @@ sub check {
 	$self->useragent->timeout($old_timeout);
 
 	if (defined $response) {
-		# Get the parsed message and status
-		$message = $response->message;
-		$status  = $response->status;
+		# Rewrite performance data using default settings
+		$response = Nagios::Plugin::OverHTTP::Middleware::PerformanceData
+			->new(
+				critical_override => $self->critical,
+				warning_override  => $self->warning,
+			)->rewrite($response);
 
-		# Default performance data
-		@performance_data = $response->has_performance_data
-			? map { Nagios::Plugin::OverHTTP::PerformanceData->new($_) }
-				Nagios::Plugin::OverHTTP::PerformanceData->split_performance_string($response->performance_data)
-			: ();
-	}
+		# Get the parsed message and status from formatter
+		my $formatter = Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto->new(
+			response => $response,
+		);
 
-	if (_critical_performance_data(\@performance_data, override => $self->critical) > 0) {
-		# CRITICAL!
-		$status = $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL;
-	}
-	elsif ($status != $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL
-		&& _warning_performance_data(\@performance_data, override => $self->warning) > 0) {
-		# WARNING
-		$status = $Nagios::Plugin::OverHTTP::Library::STATUS_WARNING;
+		$message = $formatter->stdout;
+		$status  = $formatter->exit_code;
 	}
 
 	# Set the plugin state
 	$self->_set_state($status, $message);
-
-	# Set the performance data
-	$self->{performance_data} = \@performance_data;
 
 	return;
 }
@@ -449,43 +432,6 @@ sub _set_state {
 
 	# Nothing useful to return, so chain
 	return $self;
-}
-
-###########################################################################
-# PRIVATE FUNCTIONS
-sub _critical_performance_data {
-	my ($data_r, %args) = @_;
-
-	# Get the override arguments
-	my $override = $args{override} || {};
-
-	# Make closure for grep
-	my $is_critical = sub {
-		my ($data) = @_;
-		my $label  = $data->label; # Cache value
-
-		return $data->is_critical || (exists $override->{$label} && $data->is_within_range($override->{$label}));
-	};
-
-	# Return the objects that are critical
-	return grep { $is_critical->($_) } @{$data_r};
-}
-sub _warning_performance_data {
-	my ($data_r, %args) = @_;
-
-	# Get the override arguments
-	my $override = $args{override} || {};
-
-	# Make closure for grep
-	my $is_warning = sub {
-		my ($data) = @_;
-		my $label  = $data->label; # Cache value
-
-		return $data->is_warning || (exists $override->{$label} && $data->is_within_range($override->{$label}));
-	};
-
-	# Return the objects that are warning
-	return grep { $is_warning->($_) } @{$data_r};
 }
 
 ###########################################################################

@@ -42,6 +42,12 @@ provides:
   Nagios::Plugin::OverHTTP::Library:
     file: lib/Nagios/Plugin/OverHTTP/Library.pm
     version: 0.14
+  Nagios::Plugin::OverHTTP::Middleware:
+    file: lib/Nagios/Plugin/OverHTTP/Middleware.pm
+    version: 0.14
+  Nagios::Plugin::OverHTTP::Middleware::PerformanceData:
+    file: lib/Nagios/Plugin/OverHTTP/Middleware/PerformanceData.pm
+    version: 0.14
   Nagios::Plugin::OverHTTP::Parser:
     file: lib/Nagios/Plugin/OverHTTP/Parser.pm
     version: 0.14
@@ -68,6 +74,7 @@ requires:
   LWP::UserAgent: 0
   Moose: 0.74
   Moose::Role: 0.74
+  MooseX::Clone: 0.05
   MooseX::Getopt: 0.19
   MooseX::StrictConstructor: 0.08
   MooseX::Types: 0.08
