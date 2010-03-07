@@ -847,6 +847,9 @@ Douglas Christopher Wilson, C<< <doug at somethingdoug.com> >>
 =item * Alex Wollangk contributed the idea and code for the
 L</X-Nagios-Information> header.
 
+=item * Peter van Eijk pushed me to get performance data handling
+implemented.
+
 =back
 
 =head1 BUGS AND LIMITATIONS
