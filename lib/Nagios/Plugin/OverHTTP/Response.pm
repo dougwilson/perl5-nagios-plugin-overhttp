@@ -42,8 +42,9 @@ has 'performance_data' => (
 has 'response' => (
 	is  => 'ro',
 	isa => 'HTTP::Response',
-	required => 1,
-	traits   => [qw/Clone/],
+	clearer   => '_clear_response',
+	predicate => 'has_response',
+	traits    => [qw/Clone/],
 );
 has 'status' => (
 	is  => 'ro',
@@ -91,7 +92,7 @@ This is a string that represents the performance data from the plugin.
 
 =head2 response
 
-B<Required>. This is the L<HTTP::Response> object to parse.
+This is the L<HTTP::Response> object that was parsed.
 
 =head2 status
 
@@ -103,6 +104,11 @@ B<Required>. This is the status from the remote plugin.
 
 This will return a Boolean of true if the response had any L</performance_data>
 and false otherwise.
+
+=head2 has_response
+
+This will return a Boolean of true if the response had any L</response> and
+false otherwise.
 
 =head1 DEPENDENCIES
 
