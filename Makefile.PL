@@ -34,7 +34,7 @@ requires
 	'Readonly'                  => '1.03',
 	'Regexp::Common'            => '2.119',
 	'Scalar::Util'              => '1.19',
-	'Try::Tiny'                 => 0,
+	'Try::Tiny'                 => '0.04',
 	'URI'                       => 0,
 	'namespace::clean'          => '0.04';
 

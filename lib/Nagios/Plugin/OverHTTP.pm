@@ -34,8 +34,9 @@ use LWP::UserAgent;
 use Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto;
 use Nagios::Plugin::OverHTTP::Middleware::PerformanceData;
 use Nagios::Plugin::OverHTTP::Parser::Standard;
+use Nagios::Plugin::OverHTTP::Response;
 use Readonly 1.03;
-use Try::Tiny;
+use Try::Tiny 0.04;
 use URI;
 
 ###########################################################################
@@ -205,8 +206,6 @@ has 'warning' => (
 sub check {
 	my ($self) = @_;
 
-	my ($message, $status);
-
 	# Save the current timeout for the useragent
 	my $old_timeout = $self->useragent->timeout;
 
@@ -222,40 +221,15 @@ sub check {
 		$self->request(method => $self->verb, url => $self->url);
 	}
 	catch {
-		# Message is string of the error
-		$message = qq{$_};
-
-		# Status is critical
-		$status = $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL;
-
-		# Response undefined
-		undef;
+		# Rethrow the error
+		croak $_;
+	}
+	finally {
+		# Restore the previous timeout value to the useragent
+		$self->useragent->timeout($old_timeout);
 	};
 
-	# Restore the previous timeout value to the useragent
-	$self->useragent->timeout($old_timeout);
-
-	if (defined $response) {
-		# Rewrite performance data using default settings
-		$response = Nagios::Plugin::OverHTTP::Middleware::PerformanceData
-			->new(
-				critical_override => $self->critical,
-				warning_override  => $self->warning,
-			)->rewrite($response);
-
-		# Get the parsed message and status from formatter
-		my $formatter = Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto->new(
-			response => $response,
-		);
-
-		$message = $formatter->stdout;
-		$status  = $formatter->exit_code;
-	}
-
-	# Set the plugin state
-	$self->_set_state($status, $message);
-
-	return;
+	return $response;
 }
 sub create_request {
 	my ($self, %args) = @_;
@@ -301,11 +275,42 @@ sub request {
 sub run {
 	my ($self) = @_;
 
-	# Print the message to stdout
-	print $self->message;
+	# Perform the check
+	my $response = try {
+		# Make request
+		$self->check;
+	}
+	catch {
+		# Return a response with the error message
+		Nagios::Plugin::OverHTTP::Response->new(
+			# Message is string of the error
+			message => qq{$_},
 
-	# Return the status code
-	return $self->status;
+			# Status is critical
+			status => $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL,
+		);
+	};
+
+	# Rewrite performance data using default settings
+	$response = Nagios::Plugin::OverHTTP::Middleware::PerformanceData
+		->new(
+			critical_override => $self->critical,
+			warning_override  => $self->warning,
+		)->rewrite($response);
+
+	# Get the parsed message and status from formatter
+	my $formatter = Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto->new(
+		response => $response,
+	);
+
+	# Print errors first
+	print {*STDERR} $formatter->stderr;
+
+	# Print standard output
+	print {*STDOUT} $formatter->stdout;
+
+	# Return exit code
+	return $formatter->exit_code;
 }
 
 ###########################################################################
@@ -313,8 +318,36 @@ sub run {
 sub _build_after_check {
 	my ($self, $attribute) = @_;
 
-	# Preform the check
-	$self->check;
+	# Perform the check
+	my $response = try {
+		# Make request
+		$self->check;
+	}
+	catch {
+		# Return a response with the error message
+		Nagios::Plugin::OverHTTP::Response->new(
+			# Message is string of the error
+			message => qq{$_},
+
+			# Status is critical
+			status => $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL,
+		);
+	};
+
+	# Rewrite performance data using default settings
+	$response = Nagios::Plugin::OverHTTP::Middleware::PerformanceData
+		->new(
+			critical_override => $self->critical,
+			warning_override  => $self->warning,
+		)->rewrite($response);
+
+	# Get the parsed message and status from formatter
+	my $formatter = Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto->new(
+		response => $response,
+	);
+
+	# Set the plugin state
+	$self->_set_state($formatter->exit_code, $formatter->stdout);
 
 	# Return the specified attribute for build
 	return $self->{$attribute};
