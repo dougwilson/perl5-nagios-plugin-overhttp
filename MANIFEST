@@ -17,6 +17,7 @@ lib/Nagios/Plugin/OverHTTP/Formatter/Nagios/Version3.pm
 lib/Nagios/Plugin/OverHTTP/Library.pm
 lib/Nagios/Plugin/OverHTTP/Middleware.pm
 lib/Nagios/Plugin/OverHTTP/Middleware/PerformanceData.pm
+lib/Nagios/Plugin/OverHTTP/Middleware/StatusPrefix.pm
 lib/Nagios/Plugin/OverHTTP/Parser.pm
 lib/Nagios/Plugin/OverHTTP/Parser/Standard.pm
 lib/Nagios/Plugin/OverHTTP/PerformanceData.pm
@@ -30,6 +31,7 @@ t/attributes.t
 t/commandline.t
 t/constructor.t
 t/middleware/performance-data.t
+t/middleware/status-prefix.t
 t/mock.t
 t/performance-data-module.t
 t/performance-data.t

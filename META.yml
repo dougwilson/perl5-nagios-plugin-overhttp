@@ -48,6 +48,9 @@ provides:
   Nagios::Plugin::OverHTTP::Middleware::PerformanceData:
     file: lib/Nagios/Plugin/OverHTTP/Middleware/PerformanceData.pm
     version: 0.14
+  Nagios::Plugin::OverHTTP::Middleware::StatusPrefix:
+    file: lib/Nagios/Plugin/OverHTTP/Middleware/StatusPrefix.pm
+    version: 0.14
   Nagios::Plugin::OverHTTP::Parser:
     file: lib/Nagios/Plugin/OverHTTP/Parser.pm
     version: 0.14
