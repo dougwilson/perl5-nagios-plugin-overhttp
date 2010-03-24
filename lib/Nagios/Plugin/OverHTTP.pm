@@ -204,25 +204,41 @@ has 'warning' => (
 ###########################################################################
 # METHODS
 sub check {
-	my ($self) = @_;
+	my ($self, %args) = @_;
+
+	# Get the argument for exceptions
+	my $catch_exceptions = $args{catch_exceptions} || 0;
 
 	# Save the current timeout for the useragent
 	my $old_timeout = $self->useragent->timeout;
 
-	# Set the useragent's timeout to our timeout
-	# if a timeout has been declared.
+	# Set the useragent's timeout to our timeout if a timeout has been declared.
 	if ($self->has_timeout) {
 		$self->useragent->timeout($self->timeout);
 	}
 
+	my $response;
+
 	# Get the response of the plugin
-	my $response = try {
+	try {
 		# Make request
-		$self->request(method => $self->verb, url => $self->url);
+		$response = $self->request(method => $self->verb, url => $self->url);
 	}
 	catch {
-		# Rethrow the error
-		croak $_;
+		if ($catch_exceptions) {
+			# Return a response with the error message
+			$response = Nagios::Plugin::OverHTTP::Response->new(
+				# Message is string of the error
+				message => qq{$_},
+
+				# Status is critical
+				status => $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL,
+			);
+		}
+		else {
+			# Rethrow the error
+			croak $_;
+		}
 	}
 	finally {
 		# Restore the previous timeout value to the useragent
@@ -276,20 +292,7 @@ sub run {
 	my ($self) = @_;
 
 	# Perform the check
-	my $response = try {
-		# Make request
-		$self->check;
-	}
-	catch {
-		# Return a response with the error message
-		Nagios::Plugin::OverHTTP::Response->new(
-			# Message is string of the error
-			message => qq{$_},
-
-			# Status is critical
-			status => $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL,
-		);
-	};
+	my $response = $self->check(catch_exceptions => 1);
 
 	# Rewrite performance data using default settings
 	$response = Nagios::Plugin::OverHTTP::Middleware::PerformanceData
@@ -319,20 +322,7 @@ sub _build_after_check {
 	my ($self, $attribute) = @_;
 
 	# Perform the check
-	my $response = try {
-		# Make request
-		$self->check;
-	}
-	catch {
-		# Return a response with the error message
-		Nagios::Plugin::OverHTTP::Response->new(
-			# Message is string of the error
-			message => qq{$_},
-
-			# Status is critical
-			status => $Nagios::Plugin::OverHTTP::Library::STATUS_CRITICAL,
-		);
-	};
+	my $response = $self->check(catch_exceptions => 1);
 
 	# Rewrite performance data using default settings
 	$response = Nagios::Plugin::OverHTTP::Middleware::PerformanceData
