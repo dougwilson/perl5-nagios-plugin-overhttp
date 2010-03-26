@@ -467,7 +467,7 @@ __END__
 
 =head1 NAME
 
-Nagios::Plugin::OverHTTP - Nagios plugin to check over the HTTP protocol.
+Nagios::Plugin::OverHTTP - Nagios plugin to check over HTTP.
 
 =head1 VERSION
 

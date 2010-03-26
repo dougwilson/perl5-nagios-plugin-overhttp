@@ -1,5 +1,5 @@
 ---
-abstract: 'Nagios plugin to check over the HTTP protocol.'
+abstract: 'Nagios plugin to check over HTTP.'
 author:
   - 'Douglas Christopher Wilson <doug@somethingdoug.com>'
 build_requires:
