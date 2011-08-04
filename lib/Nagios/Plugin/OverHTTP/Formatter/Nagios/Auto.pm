@@ -12,10 +12,10 @@ our $VERSION   = '0.14';
 ###########################################################################
 # MODULE IMPORTS
 use Carp qw(croak);
+use Const::Fast qw(const);
 use English qw(-no_match_vars);
 use Env::Path 0.04;
 use IPC::System::Simple 0.13;
-use Readonly 1.03;
 use Regexp::Common 2.119;
 use Try::Tiny;
 
@@ -25,10 +25,10 @@ use namespace::clean 0.04 -except => [qw(meta)];
 
 ###########################################################################
 # PRIVATE CONSTANTS
-Readonly my $NAGIOS_FORMATTER_PRE => 'Nagios::Plugin::OverHTTP::Formatter::Nagios';
-Readonly my $DEFAULT_FORMATTER    => join q{::}, $NAGIOS_FORMATTER_PRE, q{Version3};
-Readonly my $NAGIOS_EXECUTABLE    => 'nagios';
-Readonly my $VERSION_RE           => $RE{num}{int}{-sep => q{.}}{-group => q{1,3}};
+const my $NAGIOS_FORMATTER_PRE => 'Nagios::Plugin::OverHTTP::Formatter::Nagios';
+const my $DEFAULT_FORMATTER    => join q{::}, $NAGIOS_FORMATTER_PRE, q{Version3};
+const my $NAGIOS_EXECUTABLE    => 'nagios';
+const my $VERSION_RE           => $RE{num}{int}{-sep => q{.}}{-group => q{1,3}};
 
 ###########################################################################
 # CONSTRUCTOR
@@ -188,13 +188,13 @@ This module is dependent on the following modules:
 
 =item * L<Carp>
 
+=item * L<Const::Fast>
+
 =item * L<English>
 
 =item * L<Env::Path> 0.04
 
 =item * L<IPC::System::Simple> 0.13
-
-=item * L<Readonly> 1.03
 
 =item * L<Regexp::Common> 2.119
 

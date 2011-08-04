@@ -25,11 +25,11 @@ use Nagios::Plugin::OverHTTP::Library qw(Status);
 ###########################################################################
 # MODULE IMPORTS
 use Carp qw(croak);
+use Const::Fast qw(const);
 use HTML::Strip 1.05;
 use HTTP::Status 5.817;
 use Nagios::Plugin::OverHTTP::Library 0.14;
 use Nagios::Plugin::OverHTTP::Response;
-use Readonly 1.03;
 
 ###########################################################################
 # ALL IMPORTS BEFORE THIS WILL BE ERASED
@@ -37,10 +37,10 @@ use namespace::clean 0.04 -except => [qw(meta)];
 
 ###########################################################################
 # PRIVATE CONSTANTS
-Readonly my $ERROR_BAD_STATUS   => q{Status header %s is in valid};
-Readonly my $HEADER_MESSAGE     => 'X-Nagios-Information';
-Readonly my $HEADER_PERFORMANCE => 'X-Nagios-Performance';
-Readonly my $HEADER_STATUS      => 'X-Nagios-Status';
+const my $ERROR_BAD_STATUS   => q{Status header %s is in valid};
+const my $HEADER_MESSAGE     => 'X-Nagios-Information';
+const my $HEADER_PERFORMANCE => 'X-Nagios-Performance';
+const my $HEADER_STATUS      => 'X-Nagios-Status';
 
 ###########################################################################
 # ATTRIBUTES
@@ -350,6 +350,8 @@ This module is dependent on the following modules:
 
 =item * L<Carp>
 
+=item * L<Const::Fast>
+
 =item * L<HTML::Strip> 1.05
 
 =item * L<HTTP::Status> 5.817
@@ -363,8 +365,6 @@ This module is dependent on the following modules:
 =item * L<Nagios::Plugin::OverHTTP::Parser>
 
 =item * L<Nagios::Plugin::OverHTTP::Response>
-
-=item * L<Readonly> 1.03
 
 =item * L<namespace::clean> 0.04
 

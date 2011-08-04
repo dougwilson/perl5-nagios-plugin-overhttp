@@ -22,7 +22,7 @@ use Nagios::Plugin::OverHTTP::Library qw(
 ###########################################################################
 # MODULES
 use Carp qw(croak);
-use Readonly 1.03;
+use Const::Fast qw(const);
 
 ###########################################################################
 # ALL IMPORTS BEFORE THIS WILL BE ERASED
@@ -30,7 +30,7 @@ use namespace::clean 0.04 -except => [qw(meta)];
 
 ###########################################################################
 # PRIVATE CONSTANTS
-Readonly my $ERROR_BAD_STATUS => q{Unable to change the status %s to exit code};
+const my $ERROR_BAD_STATUS => q{Unable to change the status %s to exit code};
 
 ###########################################################################
 # REQUIRED METHODS
@@ -156,11 +156,11 @@ This module is dependent on the following modules:
 
 =item * L<Carp>
 
+=item * L<Const::Fast>
+
 =item * L<Moose::Role> 0.74
 
 =item * L<Nagios::Plugin::OverHTTP::Library>
-
-=item * L<Readonly> 1.03
 
 =item * L<namespace::clean> 0.04
 

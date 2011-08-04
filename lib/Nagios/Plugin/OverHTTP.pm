@@ -28,6 +28,7 @@ use Nagios::Plugin::OverHTTP::Library 0.14 qw(
 ###########################################################################
 # MODULE IMPORTS
 use Carp qw(croak);
+use Const::Fast qw(const);
 use HTTP::Request 5.827;
 use HTTP::Status 5.817 qw(:constants);
 use LWP::UserAgent;
@@ -35,7 +36,6 @@ use Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto;
 use Nagios::Plugin::OverHTTP::Middleware::PerformanceData;
 use Nagios::Plugin::OverHTTP::Parser::Standard;
 use Nagios::Plugin::OverHTTP::Response;
-use Readonly 1.03;
 use Try::Tiny 0.04;
 use URI;
 
@@ -49,14 +49,14 @@ with 'MooseX::Getopt';
 
 ###########################################################################
 # PUBLIC CONSTANTS
-Readonly our $STATUS_OK       => 0;
-Readonly our $STATUS_WARNING  => 1;
-Readonly our $STATUS_CRITICAL => 2;
-Readonly our $STATUS_UNKNOWN  => 3;
+const our $STATUS_OK       => 0;
+const our $STATUS_WARNING  => 1;
+const our $STATUS_CRITICAL => 2;
+const our $STATUS_UNKNOWN  => 3;
 
 ###########################################################################
 # PRIVATE CONSTANTS
-Readonly my $DEFAULT_REQUEST_METHOD => q{GET};
+const my $DEFAULT_REQUEST_METHOD => q{GET};
 
 ###########################################################################
 # ATTRIBUTES
@@ -837,6 +837,8 @@ server.
 
 =item * L<Carp>
 
+=item * L<Const::Fast>
+
 =item * L<HTTP::Request> 5.827
 
 =item * L<HTTP::Status> 5.817
@@ -848,8 +850,6 @@ server.
 =item * L<MooseX::Getopt> 0.19
 
 =item * L<MooseX::StrictConstructor> 0.08
-
-=item * L<Readonly> 1.03
 
 =item * L<Try::Tiny>
 
