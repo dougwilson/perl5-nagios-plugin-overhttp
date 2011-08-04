@@ -1,8 +1,15 @@
 Revision history for Nagios-Plugin-OverHTTP
 ===========================================
 
+0.15 2011-08-04
+---------------
+  * Add new `Nagios::Plugin::OverHTTP::Middleware::StatusPrefix` module.
+  * The `response` attribute is now optional in
+    `Nagios::Plugin::OverHTTP::Response`.
+  * Change use of `Readonly` with `Const::Fast`.
+
 0.14 Sun, March 7, 2010 16:53:12 -0500
--------------------
+--------------------------------------
   * Added new feature where performance data is parsed from the body and
     `X-Nagios-Performance` header (in `Parser::Standard`).
   * If `Content-Type` is `text/html` or XHTML, then `HTML::Strip` is used to

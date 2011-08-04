@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.14';
+our $VERSION   = '0.15';
 
 ###########################################################################
 # MOOSE
@@ -471,7 +471,7 @@ Nagios::Plugin::OverHTTP - Nagios plugin to check over HTTP.
 
 =head1 VERSION
 
-This documentation refers to L<Nagios::Plugin::OverHTTP> version 0.14
+This documentation refers to L<Nagios::Plugin::OverHTTP> version 0.15
 
 =head1 SYNOPSIS
 

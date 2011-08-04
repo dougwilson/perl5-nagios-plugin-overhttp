@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.14';
+our $VERSION   = '0.15';
 
 ###########################################################################
 # MOOSE
@@ -292,7 +292,7 @@ Nagios::Plugin::OverHTTP::Parser::Standard - The standard response parser
 =head1 VERSION
 
 This documentation refers to L<Nagios::Plugin::OverHTTP::Parser::Standard>
-version 0.14
+version 0.15
 
 =head1 SYNOPSIS
 
