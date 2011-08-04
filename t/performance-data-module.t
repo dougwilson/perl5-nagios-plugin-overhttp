@@ -7,6 +7,11 @@ use warnings 'all';
 use Test::More 0.94;
 use Test::Exception;
 
+if ($Test::More::VERSION =~ m{\A 2\.00 0[67] \z}mosx) {
+	plan skip_all => 'subtests broken with Test::More 2.00_06 and _07';
+	exit 0;
+}
+
 plan tests => 6;
 
 use Nagios::Plugin::OverHTTP::PerformanceData;
