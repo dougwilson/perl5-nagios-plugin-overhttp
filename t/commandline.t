@@ -3,7 +3,8 @@
 use strict;
 use warnings 'all';
 
-use Test::More tests => 14;
+use Test::More tests => 15;
+use Test::Trap;
 
 use Nagios::Plugin::OverHTTP;
 
@@ -13,27 +14,29 @@ SKIP: {
 	my $skip = 0;
 	# Create new plugin with no arguments which means it will read from
 	# command line
-	eval {
-		no strict 'refs';
-		local *{'CORE::GLOBAL::exit'} = sub { $skip = 1; };
-		Nagios::Plugin::OverHTTP->new_with_options;
-	};
+	trap { Nagios::Plugin::OverHTTP->new_with_options; };
 
-	skip 'Usage failed out', 9, if $skip;
+	if ($trap->leaveby ne 'exit' || $trap->exit != 0) {
+		ok(0, 'Usage exited with code 0');
+		$trap->diag_all;
+		skip 'Usage failed out', 9;
+	} else {
+		ok(1, 'Usage exited with code 0');
+	}
 
-	my $err = $@;
+	my $output = $trap->stdout;
 
-	like($err, qr/^usage:/ms, 'Help should show usage');
+	like($output, qr/^usage:/ms, 'Help should show usage');
 
-	like($err, qr/\s+--default_status\s+/msx, 'default_status should be in usage');
-	like($err, qr/\s+--hostname\s+/msx, 'hostname should be in usage');
-	like($err, qr/\s+--path\s+/msx, 'path should be in usage');
-	like($err, qr/\s+--ssl\s+/msx, 'ssl should be in usage');
-	like($err, qr/\s+--timeout\s+/msx, 'timeout should be in usage');
-	like($err, qr/\s+--url\s+/msx, 'url should be in usage');
+	like($output, qr/\s+--default_status\s+/msx, 'default_status should be in usage');
+	like($output, qr/\s+--hostname\s+/msx, 'hostname should be in usage');
+	like($output, qr/\s+--path\s+/msx, 'path should be in usage');
+	like($output, qr/\s+--ssl\s+/msx, 'ssl should be in usage');
+	like($output, qr/\s+--timeout\s+/msx, 'timeout should be in usage');
+	like($output, qr/\s+--url\s+/msx, 'url should be in usage');
 
-	unlike($err, qr/\s+--message\s+/msx, 'message should not be in usage');
-	unlike($err, qr/\s+--useragent\s+/msx, 'useragent should not be in usage');
+	unlike($output, qr/\s+--message\s+/msx, 'message should not be in usage');
+	unlike($output, qr/\s+--useragent\s+/msx, 'useragent should not be in usage');
 }
 
 SKIP: {

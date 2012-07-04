@@ -28,7 +28,7 @@ requires
 	'Moose'                     => '0.74',
 	'Moose::Role'               => '0.74',
 	'MooseX::Clone'             => '0.05',
-	'MooseX::Getopt'            => '0.19',
+	'MooseX::Getopt'            => '0.43',
 	'MooseX::StrictConstructor' => '0.08',
 	'MooseX::Types'             => '0.08',
 	'MooseX::Types::Moose'      => 0,
@@ -44,7 +44,8 @@ test_requires
 	'HTTP::Status'     => '5.817',
 	'Test::Exception'  => 0,
 	'Test::MockObject' => 0,
-	'Test::More'       => '0.94';
+	'Test::More'       => '0.94',
+	'Test::Trap'       => 0;
 
 # Modules that are required for tests in xt/
 author_requires
