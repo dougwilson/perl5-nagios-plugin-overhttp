@@ -1,5 +1,10 @@
 Revision history for Perl 5 distribution Nagios-Plugin-OverHTTP
 
+0.16 2012-07-04
+ [OTHER]
+ - Change format of Changes file.
+ - Use newer version of MooseX::Getopt for changes in usage handling.
+
 0.15 2011-08-04
  [ENHANCEMENTS]
  - Add new Nagios::Plugin::OverHTTP::Middleware::StatusPrefix module.

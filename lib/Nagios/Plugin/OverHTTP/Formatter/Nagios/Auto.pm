@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.15';
+our $VERSION   = '0.16';
 
 ###########################################################################
 # MODULE IMPORTS
@@ -116,7 +116,7 @@ version and format accordingly
 =head1 VERSION
 
 This documentation refers to L<Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto>
-version 0.15
+version 0.16
 
 =head1 SYNOPSIS
 

@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.15';
+our $VERSION   = '0.16';
 
 ###########################################################################
 # MOOSE
@@ -68,7 +68,7 @@ server
 
 =head1 VERSION
 
-This documentation refers to L<Nagios::Plugin::OverHTTP::Response> version 0.15
+This documentation refers to L<Nagios::Plugin::OverHTTP::Response> version 0.16
 
 =head1 SYNOPSIS
 

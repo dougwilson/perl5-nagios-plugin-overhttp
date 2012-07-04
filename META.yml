@@ -28,43 +28,43 @@ no_index:
 provides:
   Nagios::Plugin::OverHTTP:
     file: lib/Nagios/Plugin/OverHTTP.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Formatter:
     file: lib/Nagios/Plugin/OverHTTP/Formatter.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Formatter::Nagios::Auto:
     file: lib/Nagios/Plugin/OverHTTP/Formatter/Nagios/Auto.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Formatter::Nagios::Version2:
     file: lib/Nagios/Plugin/OverHTTP/Formatter/Nagios/Version2.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Formatter::Nagios::Version3:
     file: lib/Nagios/Plugin/OverHTTP/Formatter/Nagios/Version3.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Library:
     file: lib/Nagios/Plugin/OverHTTP/Library.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Middleware:
     file: lib/Nagios/Plugin/OverHTTP/Middleware.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Middleware::PerformanceData:
     file: lib/Nagios/Plugin/OverHTTP/Middleware/PerformanceData.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Middleware::StatusPrefix:
     file: lib/Nagios/Plugin/OverHTTP/Middleware/StatusPrefix.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Parser:
     file: lib/Nagios/Plugin/OverHTTP/Parser.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Parser::Standard:
     file: lib/Nagios/Plugin/OverHTTP/Parser/Standard.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::PerformanceData:
     file: lib/Nagios/Plugin/OverHTTP/PerformanceData.pm
-    version: 0.15
+    version: 0.16
   Nagios::Plugin::OverHTTP::Response:
     file: lib/Nagios/Plugin/OverHTTP/Response.pm
-    version: 0.15
+    version: 0.16
 requires:
   Carp: 0
   Const::Fast: 0
@@ -95,4 +95,4 @@ resources:
   homepage: http://github.com/dougwilson/perl5-nagios-plugin-overhttp/
   license: http://dev.perl.org/licenses/
   repository: git://github.com/dougwilson/perl5-nagios-plugin-overhttp.git
-version: 0.15
+version: 0.16

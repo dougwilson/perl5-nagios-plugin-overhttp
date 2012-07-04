@@ -7,7 +7,7 @@ use warnings 'all';
 ###########################################################################
 # METADATA
 our $AUTHORITY = 'cpan:DOUGDUDE';
-our $VERSION   = '0.15';
+our $VERSION   = '0.16';
 
 ###########################################################################
 # MOOSE ROLE
@@ -33,7 +33,7 @@ Nagios::Plugin::OverHTTP::Parser - Moose role for output parsers
 
 =head1 VERSION
 
-This documentation refers to L<Nagios::Plugin::OverHTTP::Parser> version 0.15
+This documentation refers to L<Nagios::Plugin::OverHTTP::Parser> version 0.16
 
 =head1 SYNOPSIS
 
