@@ -3,9 +3,9 @@ use inc::Module::Install;
 use Module::Install::AuthorRequires 0.02;
 
 name     'Nagios-Plugin-OverHTTP';
-all_from 'lib/Nagios/Plugin/OverHTTP.pm';
 author   'Douglas Christopher Wilson <doug@somethingdoug.com>';
 license  'perl';
+all_from 'lib/Nagios/Plugin/OverHTTP.pm';
 
 # Resources
 resources homepage   => 'http://github.com/dougwilson/perl5-nagios-plugin-overhttp/';
