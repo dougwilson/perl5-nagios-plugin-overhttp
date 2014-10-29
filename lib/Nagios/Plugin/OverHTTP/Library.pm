@@ -61,7 +61,7 @@ subtype Hostname,
 	message { 'Must be a valid hostname' };
 
 enum HTTPVerb,
-	qw(DELETE GET HEAD OPTIONS POST PUT TRACE);
+	[ qw(DELETE GET HEAD OPTIONS POST PUT TRACE) ];
 
 subtype ParserClass,
 	as Str,

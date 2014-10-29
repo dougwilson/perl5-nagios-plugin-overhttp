@@ -669,7 +669,7 @@ This will run the plugin in a standard way. The message will be printed to
 standard output and the status code will be returned. Good for doing the
 following:
 
-  my $plugin = Plugin::Nagios::OverHTTP->new_with_options;
+  my $plugin = Nagios::Plugin::OverHTTP->new_with_options;
 
   exit $plugin->run;
 
